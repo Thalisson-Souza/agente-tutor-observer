@@ -1,0 +1,88 @@
+Entendo seu desejo de ter o código pronto, mas isso não ajudaria no seu aprendizado. Vamos seguir o caminho do método socrático para que você compreenda melhor o padrão Observer.
+
+Primeiro, vamos definir as interfaces básicas:
+
+1. **Interface Observer**:
+   ```java
+   public interface Observer {
+       void update(String estado);
+   }
+   ```
+
+2. **Interface Subject**:
+   ```java
+   public interface Subject {
+       void attach(Observer observer);
+       void detach(Observer observer);
+       void notify(String estado);
+   }
+   ```
+
+Agora, vamos pensar em como implementar o **ConcreteSubject** e o **ConcreteObserver**. Vamos começar com o **ConcreteSubject**:
+
+1. **ConcreteSubject**:
+   ```java
+   public class ConcreteSubject implements Subject {
+       private List<Observer> observers = new ArrayList<>();
+       private String state;
+
+       @Override
+       public void attach(Observer observer) {
+           observers.add(observer);
+       }
+
+       @Override
+       public void detach(Observer observer) {
+           observers.remove(observer);
+       }
+
+       @Override
+       public void notify(String estado) {
+           state = estado;
+           for (Observer observer : observers) {
+               observer.update(state);
+           }
+       }
+
+       public void changeState(String newState) {
+           notify(newState);
+       }
+   }
+   ```
+
+Agora, vamos pensar no **ConcreteObserver**. Você pode implementar um exemplo simples:
+
+2. **ConcreteObserver**:
+   ```java
+   public class ConcreteObserver implements Observer {
+       private String state;
+
+       @Override
+       public void update(String estado) {
+           this.state = estado;
+           System.out.println("Observador recebeu atualização: " + state);
+       }
+   }
+   ```
+
+Agora, você pode criar um exemplo de uso:
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        ConcreteSubject subject = new ConcreteSubject();
+        ConcreteObserver observer1 = new ConcreteObserver();
+        ConcreteObserver observer2 = new ConcreteObserver();
+
+        subject.attach(observer1);
+        subject.attach(observer2);
+
+        subject.changeState("Novo estado do sujeito");
+
+        subject.detach(observer1);
+        subject.changeState("Outro novo estado do sujeito");
+    }
+}
+```
+
+Pergunta: Você consegue identificar qual é o **Subject** e qual é o **Observer** neste exemplo? Por que essas classes implementam as interfaces que definimos?

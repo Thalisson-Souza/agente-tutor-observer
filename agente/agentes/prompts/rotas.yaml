@@ -1,0 +1,54 @@
+# Orientação específica de cada intenção. Entra na variável {orientacao} da tarefa
+# (tarefas.yaml) e, portanto, é lida pelo modelo: faz parte do prompt.
+# Qual agente atende cada intenção está em agente/regras/roteador.py (ROTAS).
+#
+# {detalhe} é trocado pelo dado que o roteador extraiu da mensagem (hoje, só o nome
+# de um padrão desconhecido); sem dado, fica "nenhum nome citado".
+
+conceito:
+  orientacao: >
+    Explique o conceito em camadas: analogia, definição, participantes, consequências.
+
+selecao:
+  orientacao: >
+    Descreva uma situação em que o Observer é a melhor escolha e uma em que deve ser
+    evitado, explicando o porquê de cada uma.
+
+fechamento:
+  orientacao: Faça um resumo final em forma de checklist do que lembrar antes de usar o Observer.
+
+exemplo:
+  orientacao: >
+    Mostre um exemplo em Java e indique o papel de cada classe. Use domínio diferente do
+    que já apareceu no histórico.
+
+uso_incorreto:
+  orientacao: >
+    Mostre um uso equivocado comum do Observer em Java, explique o problema e mostre a correção.
+
+confusao:
+  orientacao: >
+    Explique com qual padrão o Observer é mais confundido, a diferença principal, por que a
+    confusão acontece e um critério prático para distinguir. Termine com uma pergunta de verificação.
+
+exercicio:
+  orientacao: Proponha um exercício curto (cenário + 1 ou 2 perguntas). Não dê a resposta.
+
+resposta_exercicio:
+  orientacao: >
+    O estudante está respondendo ao exercício proposto no histórico. Avalie: o que está certo,
+    o que está errado e por quê, dê uma pista e peça nova tentativa ou proponha o próximo passo.
+
+solucao_pronta:
+  orientacao: >
+    O estudante pediu a solução pronta. NÃO escreva implementação: nenhuma classe com métodos
+    implementados e nenhum método main. Responda só com: (1) uma frase gentil explicando que
+    escrever o código é o que fixa o aprendizado; (2) uma lista numerada de 4 a 5 passos, cada um
+    com uma pergunta que o estudante deve responder (quem é o Subject, quem são os observadores,
+    push ou pull, quando notificar, como desanexar); (3) uma pergunta convidando-o a mostrar a
+    primeira tentativa. Se quiser, mostre só a assinatura da interface Observer, sem corpo.
+
+inventado:
+  orientacao: >
+    pedido para inventar um padrão ou sobre um padrão que não está no catálogo GoF
+    (nome citado pelo estudante, {detalhe})

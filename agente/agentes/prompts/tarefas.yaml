@@ -1,0 +1,43 @@
+# Descrições das tarefas. Variáveis entre chaves são preenchidas a cada pergunta:
+# {pergunta}, {historico}, {conhecimento}, {orientacao}
+
+especialista:
+  description: |
+    HISTÓRICO RECENTE DA CONVERSA (use para manter coerência; pode estar vazio):
+    {historico}
+
+    BASE DE CONHECIMENTO (única fonte de fatos permitida):
+    {conhecimento}
+
+    ORIENTAÇÃO PARA ESTA RESPOSTA:
+    {orientacao}
+
+    MENSAGEM DO ESTUDANTE:
+    {pergunta}
+  expected_output: >
+    Resposta didática em português do Brasil, correta segundo a base de conhecimento,
+    dentro do limite de palavras do seu papel, terminando com uma pergunta ao estudante.
+
+revisao:
+  description: |
+    Revise o RASCUNHO que o especialista escreveu (está no contexto desta tarefa) para a mensagem do estudante:
+    {pergunta}
+
+    BASE DE CONHECIMENTO:
+    {conhecimento}
+
+    Verifique: (1) os fatos sobre o Observer estão corretos e nada foi inventado; (2) não foi entregue solução completa pronta para um exercício ou projeto do estudante; (3) a resposta está no tema.
+    Se o rascunho estiver correto, responda somente a palavra APROVADO.
+    Se houver erro, responda CORRIGIDO: seguido da versão corrigida completa para o estudante.
+  expected_output: >
+    Exatamente "APROVADO", ou "CORRIGIDO:" seguido do texto corrigido.
+
+recusa:
+  description: |
+    O estudante escreveu: {pergunta}
+
+    O sistema detectou um pedido sobre um padrão que não existe ou que deveria ser inventado ({orientacao}).
+    Responda diretamente ao estudante: recuse com educação, explique que você não inventa padrões porque isso ensinaria algo falso, diga que esse nome não faz parte do catálogo GoF que você conhece e ofereça ensinar o padrão Observer (por exemplo, explicar o conceito ou propor um exercício).
+  expected_output: >
+    Recusa educada em português do Brasil, com no máximo 120 palavras, terminando com uma pergunta
+    que convida o estudante a estudar o Observer.
