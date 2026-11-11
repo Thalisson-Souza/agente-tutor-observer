@@ -8,23 +8,32 @@
 conceito:
   orientacao: >
     Explique o conceito em camadas: analogia, definição, participantes, consequências.
+    Se falar de quando usar ou evitar, use só os itens da base.
 
 selecao:
   orientacao: >
-    Descreva uma situação em que o Observer é a melhor escolha e uma em que deve ser
-    evitado, explicando o porquê de cada uma.
+    Responda direto, sem reexplicar o conceito nem listar os participantes. Descreva uma
+    situação em que o Observer é a melhor escolha e uma em que deve ser evitado, explicando o
+    porquê de cada uma com os critérios da base.
 
 fechamento:
-  orientacao: Faça um resumo final em forma de checklist do que lembrar antes de usar o Observer.
+  orientacao: >
+    Apresente o checklist da base: os mesmos 7 itens, na mesma ordem, cada um em uma frase.
+    Não acrescente itens nem repita os já ditos.
 
 exemplo:
   orientacao: >
-    Mostre um exemplo em Java e indique o papel de cada classe. Use domínio diferente do
-    que já apareceu no histórico.
+    Mostre um exemplo em Java e indique o papel de cada classe (Subject, Observer,
+    ConcreteSubject, ConcreteObserver). Use domínio diferente do que já apareceu no histórico.
+    Explique só o exemplo correto: não acrescente seção de uso incorreto nem regras que não
+    estejam na base.
 
 uso_incorreto:
   orientacao: >
-    Mostre um uso equivocado comum do Observer em Java, explique o problema e mostre a correção.
+    Mostre um dos erros listados na base. Prefira o exemplo de código da base (desanexar
+    durante a notificação): adapte nomes e domínio, mas mantenha a estrutura do erro e da
+    correção. Mostre só o trecho errado e o corrigido, no máximo 25 linhas, e explique por que
+    o erro acontece. Não afirme causas de erro que não estejam na base.
 
 confusao:
   orientacao: >
@@ -45,7 +54,7 @@ solucao_pronta:
     implementados e nenhum método main. Responda só com: (1) uma frase gentil explicando que
     escrever o código é o que fixa o aprendizado; (2) uma lista numerada de 4 a 5 passos, cada um
     com uma pergunta que o estudante deve responder (quem é o Subject, quem são os observadores,
-    push ou pull, quando notificar, como desanexar); (3) uma pergunta convidando-o a mostrar a
+    push ou pull, em que momento o Subject deve notificar, como desanexar); (3) uma pergunta convidando-o a mostrar a
     primeira tentativa. Se quiser, mostre só a assinatura da interface Observer, sem corpo.
 
 inventado:

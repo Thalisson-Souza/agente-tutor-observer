@@ -65,10 +65,10 @@ class TestRoteador(unittest.TestCase):
 
 class TestDecisaoDeRevisao(unittest.TestCase):
     def test_so_especialista_de_rota_marcada_e_revisado(self):
-        self.assertTrue(ROTAS[Intencao.EXEMPLO].com_revisao(guardiao_ligado=True))
+        self.assertTrue(ROTAS[Intencao.RESPOSTA_EXERCICIO].com_revisao(guardiao_ligado=True))
         self.assertFalse(ROTAS[Intencao.CONCEITO].com_revisao(guardiao_ligado=True))
         self.assertTrue(ROTAS[Intencao.CONCEITO].com_revisao(guardiao_ligado=True, revisar_tudo=True))
-        self.assertFalse(ROTAS[Intencao.EXEMPLO].com_revisao(guardiao_ligado=False))
+        self.assertFalse(ROTAS[Intencao.RESPOSTA_EXERCICIO].com_revisao(guardiao_ligado=False))
 
     def test_recusa_nunca_e_revisada(self):
         inventado = ROTAS[Intencao.INVENTADO]

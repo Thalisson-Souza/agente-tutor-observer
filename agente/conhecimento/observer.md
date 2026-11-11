@@ -39,8 +39,38 @@ Cada seção começa com "## [id]". O sistema injeta no prompt apenas as seçõe
 - Depender da ordem de notificação dos observadores (o padrão não garante ordem).
 - Sujeito que conhece classes concretas de observadores (quebra o acoplamento abstrato). Correção: depender só da interface Observer.
 
+Exemplo em Java do erro de desanexar durante a notificação. O problema só existe porque o
+detach acontece DENTRO de atualizar(), enquanto o for do sujeito percorre a lista; um detach
+feito fora da notificação (ex.: no main, depois de notificar) é correto e não causa erro.
+
+```java
+// ERRADO: o observador se desanexa enquanto o sujeito percorre a lista
+class AlertaUnico implements Observador {
+    private final Estacao estacao;
+    AlertaUnico(Estacao e) { this.estacao = e; }
+    public void atualizar(double t) {
+        System.out.println("Alerta: " + t);
+        estacao.desanexar(this);   // altera a lista no meio do for abaixo
+    }
+}
+
+class Estacao {
+    private final List<Observador> observadores = new ArrayList<>();
+    public void desanexar(Observador o) { observadores.remove(o); }
+    public void notificar(double t) {
+        // lança ConcurrentModificationException (ou pula observadores sem avisar)
+        for (Observador o : observadores) o.atualizar(t);
+    }
+}
+
+// CORREÇÃO: percorrer uma cópia; mudanças na lista original não afetam a iteração
+public void notificar(double t) {
+    for (Observador o : List.copyOf(observadores)) o.atualizar(t);
+}
+```
+
 ## [confusao]
-- Publish-Subscribe com broker/canal de eventos: publicadores e assinantes não se conhecem, há um intermediário (barramento, fila) e muitas vezes a entrega é assíncrona. No Observer clássico, o sujeito mantém diretamente a lista de observadores e os chama de forma síncrona. O GoF cita "Publish-Subscribe" como outro nome do Observer, por isso a confusão é comum.
+- Publish-Subscribe com broker/canal de eventos: publicadores e assinantes não se conhecem, há um intermediário (barramento, fila) e muitas vezes a entrega é assíncrona. No Observer clássico, o sujeito mantém diretamente a lista de observadores e os chama de forma síncrona. Quem conhece quem: no Observer o sujeito conhece seus observadores (só pela interface Observer), e no modelo pull o observador concreto também guarda referência ao sujeito; no Pub/Sub nenhum dos lados conhece o outro, só o intermediário. O GoF cita "Publish-Subscribe" como outro nome do Observer, por isso a confusão é comum.
 - Mediator: centraliza a comunicação complexa entre vários colegas (muitos-para-muitos), contendo lógica de coordenação. O Observer distribui notificação um-para-muitos sem lógica central. Podem ser combinados: um Mediator pode usar Observer para receber eventos dos colegas.
 - Chain of Responsibility: a requisição passa por uma cadeia até um manipulador tratar; no Observer todos os observadores inscritos são notificados.
 - Java: java.util.Observer e java.util.Observable foram depreciados no Java 9; hoje se usam interfaces próprias, PropertyChangeListener ou bibliotecas de eventos.

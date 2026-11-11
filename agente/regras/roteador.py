@@ -35,8 +35,10 @@ ROTAS: dict[I, Rota] = {r.intencao: r for r in [
     Rota(I.CONCEITO, A.TUTOR, T.ESPECIALISTA, ("conceito", "participantes", "consequencias")),
     Rota(I.SELECAO, A.TUTOR, T.ESPECIALISTA, ("conceito", "selecao")),
     Rota(I.FECHAMENTO, A.TUTOR, T.ESPECIALISTA, ("fechamento", "consequencias")),
-    Rota(I.EXEMPLO, A.EXEMPLIFICADOR, T.ESPECIALISTA, ("participantes", "exemplo"), revisar=True),
-    Rota(I.USO_INCORRETO, A.EXEMPLIFICADOR, T.ESPECIALISTA, ("uso_incorreto", "participantes"), revisar=True),
+    # Exemplo e uso incorreto sem Guardião: em 11/11 ele aprovou um exemplo de erro falso no C4
+    # e somava ~3 min. A correção veio de ancorar o código na base (seção uso_incorreto).
+    Rota(I.EXEMPLO, A.EXEMPLIFICADOR, T.ESPECIALISTA, ("participantes", "exemplo")),
+    Rota(I.USO_INCORRETO, A.EXEMPLIFICADOR, T.ESPECIALISTA, ("uso_incorreto",)),
     Rota(I.CONFUSAO, A.INQUIRIDOR, T.ESPECIALISTA, ("confusao", "conceito")),
     Rota(I.EXERCICIO, A.INQUIRIDOR, T.ESPECIALISTA, ("participantes", "selecao"), bloquear_solucao=True),
     Rota(I.RESPOSTA_EXERCICIO, A.INQUIRIDOR, T.ESPECIALISTA, ("participantes", "consequencias", "uso_incorreto"),
