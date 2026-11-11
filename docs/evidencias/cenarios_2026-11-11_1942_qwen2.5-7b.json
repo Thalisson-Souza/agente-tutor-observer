@@ -1,0 +1,14 @@
+[
+  {
+    "cenario": "C2",
+    "pergunta": "Dê um exemplo de aplicação do padrão Observer em Java.",
+    "intencao": "exemplo",
+    "agentes": [
+      "exemplificador"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 216,
+    "resposta": "```java\ninterface Observador {\n    void atualizar(int novoStatus);\n}\n\ninterface Sujeito {\n    void anexar(Observador o);\n    void desanexar(Observador o);\n    void notificar();\n}\n\nclass Usuario implements Observador {                    // ConcreteObserver\n    private int status;\n    public void atualizar(int novoStatus) {\n        this.status = novoStatus;\n        System.out.println(\"Status atualizado para: \" + status);\n    }\n    public int getStatus() { return status; }\n}\n\nclass Notificador implements Sujeito {                   // ConcreteSubject\n    private final List<Observador> observadores = new ArrayList<>();\n    private int status;\n    public void anexar(Observador o) { observadores.add(o); }\n    public void desanexar(Observador o) { observadores.remove(o); }\n    public void notificar() {\n        for (Observador o : List.copyOf(observadores)) o.atualizar(status);\n    }\n    public void setStatus(int novoStatus) {\n        this.status = novoStatus;\n        notificar();\n    }\n}\n\npublic class ObserverExemplo {\n    public static void main(String[] args) {\n        Notificador notificador = new Notificador();\n        Usuario usuario1 = new Usuario();\n        Usuario usuario2 = new Usuario();\n        notificador.anexar(usuario1);\n        notificador.anexar(usuario2);\n        notificador.setStatus(1);  // Notifica ambos os observadores\n        System.out.println(\"Status do usuário 1: \" + usuario1.getStatus());\n        System.out.println(\"Status do usuário 2: \" + usuario2.getStatus());\n    }\n}\n```\n\n### Explicação\n\n1. **Interface `Observador`**: Define a interface de atualização que os observadores devem implementar. Neste caso, o método `atualizar` é chamado quando o estado do sujeito muda.\n\n2. **Interface `Sujeito`**: Define as operações que o sujeito deve oferecer. As operações incluem anexar e desanexar observadores, bem como notificar todos os observadores quando o estado muda.\n\n3. **Classe `Usuario`**: Implementa a interface `Observador` e mantém o estado atual. Quando o método `atualizar` é chamado, o estado do usuário é atualizado e exibido.\n\n4. **Classe `Notificador`**: Implementa a interface `Sujeito` e mantém uma lista de observadores. Quando o método `setStatus` é chamado, o estado do notificador é atualizado e todos os observadores são notificados.\n\n5. **Classe `ObserverExemplo`**: Exibe um exemplo de uso, onde um notificador notifica dois usuários sobre um novo status.\n\n### Pergunta\nQual método do sujeito é chamado quando um novo estado é definido, e por que isso é importante para o funcionamento do padrão Observer?"
+  }
+]

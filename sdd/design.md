@@ -37,10 +37,10 @@ só `agentes/` importa `crewai`.
 
 | Agente | Papel | Atende |
 |---|---|---|
-| Tutor | Explica o conceito em camadas (analogia → definição → participantes → consequências) | conceito, seleção, fechamento |
+| Tutor | Explica o conceito em camadas (analogia, definição, participantes, consequências); responde direto em seleção e fechamento | conceito, seleção, fechamento |
 | Exemplificador | Exemplos Java curtos com o papel de cada classe; uso incorreto e correção | exemplo, uso incorreto |
 | Inquiridor | Método socrático: exercícios, avaliação da resposta, comparação com padrões confundidos | confusão, exercício, resposta ao exercício, solução pronta |
-| Guardião | Revisa rascunhos contra a base (APROVADO/CORRIGIDO); recusa padrão inventado | revisão nas rotas de risco; padrão inventado |
+| Guardião | Revisa rascunhos contra a base (APROVADO/CORRIGIDO); recusa padrão inventado | revisão da avaliação de resposta de exercício; padrão inventado |
 
 Prompts integrais: `agente/agentes/prompts/agentes.yaml` (persona), `tarefas.yaml` (molde da
 mensagem) e `rotas.yaml` (orientação por intenção).
@@ -58,7 +58,7 @@ mensagem) e `rotas.yaml` (orientação por intenção).
 | Intenção | Agente | Guardião revisa? | Salvaguarda de código |
 |---|---|---|---|
 | conceito, selecao, fechamento | Tutor | não (sim com `TUTOR_REVISAR_TUDO=1`) | não |
-| exemplo, uso_incorreto | Exemplificador | sim | não |
+| exemplo, uso_incorreto | Exemplificador | não (D13) | não |
 | confusao | Inquiridor | não | não |
 | exercicio | Inquiridor | não | sim |
 | resposta_exercicio | Inquiridor | sim | sim |
@@ -108,6 +108,9 @@ Temperatura 0,3 (fidelidade à base); timeout de 400 s por chamada; `context_win
 
 **D12 — Telemetria do CrewAI desligada** (10/11)
 `OTEL_SDK_DISABLED`, `CREWAI_DISABLE_TELEMETRY` e `CREWAI_TRACING_ENABLED` definidos antes de importar o CrewAI, para a execução não depender de internet.
+
+**D13 — Guardião só na avaliação de resposta de exercício** (11/11)
+No roteiro, o Guardião aprovou um exemplo de erro conceitualmente falso no C4 e somava ~3 min por resposta. Exemplo e uso incorreto passaram a ser ancorados em código da base de conhecimento, e o Guardião ficou só em `resposta_exercicio`. Efeito colateral observado: sem revisão, o C2 inventou uma regra; resolvido restringindo a orientação.
 
 ## Verificado e descartado
 

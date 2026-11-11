@@ -56,3 +56,39 @@ Registro cronológico: o que mudou, como foi testado, o resultado. Uma entrada p
 ## 2026-11-10 — Iteração 6: pasta de SDD
 - `docs/SPEC.md` dividido em `sdd/requisitos.md` (princípios, R1–R9 e cenários C1–C7 com critério de aceite), `sdd/design.md` (arquitetura, agentes, fluxo e decisões D1–D12) e `sdd/tarefas.md` (backlog); este log foi movido de `docs/` para `sdd/iteracoes.md`.
 - Escolhida a versão enxuta inspirada no Spec Kit/Kiro (requisitos → design → tarefas), sem constituição nem ADRs em arquivos separados: cada arquivo corresponde a uma seção do relatório.
+
+## 2026-11-11 — Iteração 7: roteiro completo no 7b
+- Script `tests/cenarios.py` roda C1–C7 com memória vazia em cada um e salva em `docs/evidencias/cenarios_2026-11-11_1912_qwen2.5-7b.{md,json}`. Total ~28 min.
+- Roteamento: todos os 8 foram para a intenção esperada.
+
+| Cenário | Tempo | Avaliação |
+|---|---|---|
+| C1 conceito | 292 s | Correto. Ponto fraco: "evitar quando o acoplamento é desejável" não vem da base. |
+| C2 exemplo (+Guardião) | 386 s | Correto, domínio novo (estoque), papéis indicados. Lento. |
+| C3 seleção | 177 s | Correto (uso: widgets do clima; evitar: dependente fixo). Repete a explicação do conceito antes de responder. |
+| C4 uso incorreto (+Guardião) | 356 s | **Falhou.** Diz que `detach` chamado no `main`, fora da notificação, causa `ConcurrentModificationException`, o que é falso. Código com ~60 linhas (limite do prompt: 35). O Guardião aprovou. |
+| C5 confusão | 166 s | Correto no essencial; afirma que "os observadores não precisam conhecer o sujeito", impreciso (no modelo pull o ConcreteObserver referencia o sujeito). |
+| C6a inventado | 53 s | Passou. |
+| C6b código pronto | 85 s | Passou; persiste "Quando notificar o Subject?" (T4). |
+| C7 fechamento | 158 s | Parcial: 15 itens com repetições (9–10 repetem 6 e 5) e um item que mistura cascata com ordem. A base tem 7. |
+
+- Conclusões: (1) o Guardião não pegou o erro conceitual do C4, então a revisão por LLM não é confiável para exemplos de código; (2) o 7b acerta quando copia a base e erra quando inventa o próprio exemplo de erro, então o C4 precisa de um exemplo de uso incorreto pronto na base; (3) mesmo sem Guardião, respostas longas levam 3–5 min, então limitar o tamanho também reduz o tempo.
+- Bug no script: `Path.with_suffix` tratou ".5-7b" de "qwen2.5-7b" como extensão; corrigido e arquivos renomeados.
+
+## 2026-11-11 — Iteração 8: correções do roteiro
+- Mudanças: exemplo de código de uso incorreto na base (observador que se desanexa dentro de `atualizar()` e a correção com cópia da lista); orientações de seleção, fechamento e uso incorreto mais restritas (sem reexplicar o conceito, só itens da base, máx. 25 linhas); Tutor só explica em camadas quando a pergunta é sobre o conceito; base esclarece quem conhece quem (Observer × Pub/Sub); Guardião retirado de exemplo e uso incorreto (D13 em design.md).
+- Reexecução (`docs/evidencias/cenarios_2026-11-11_1938_qwen2.5-7b.md`):
+
+| Cenário | Antes | Depois | Avaliação |
+|---|---|---|---|
+| C1 | 292 s | 238 s | Correto; sem o "quando evitar" inventado |
+| C2 | 386 s | 200 s | **Regressão:** sem o Guardião, inventou uma seção de uso incorreto falsa ("notify() deve receber o Observador") |
+| C3 | 177 s | 106 s | Correto e direto, sem repetir o conceito |
+| C4 | 356 s | 196 s | **Corrigido:** erro real (detach dentro de `atualizar()`) e correção certa |
+| C5 | 166 s | 182 s | Correto; diz quem conhece quem |
+| C6b | 85 s | 88 s | Correto; redação "em que momento o Subject deve notificar" |
+| C7 | 158 s | 93 s | Correto: os 7 itens da base |
+
+- Correção da regressão do C2: orientação do exemplo proíbe seção de uso incorreto e regras fora da base. C2 de novo (`cenarios_2026-11-11_1942_qwen2.5-7b.md`): correto, 4 papéis indicados, 216 s.
+- Resultado: os 8 cenários passam; tempo por resposta entre 53 e 238 s (antes até 386 s).
+- Lição: o que mais melhorou a correção foi dar ao modelo o exemplo certo na base, não a revisão por outro agente.

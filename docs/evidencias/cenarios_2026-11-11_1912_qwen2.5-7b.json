@@ -1,0 +1,104 @@
+[
+  {
+    "cenario": "C1",
+    "pergunta": "Explique o que é o padrão Observer e qual problema ele resolve.",
+    "intencao": "conceito",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 292,
+    "resposta": "Claro! Vamos explicar o padrão Observer em camadas.\n\n### Analogia\nImagine que você assina um jornal. Quando o jornal publica notícias, você recebe as atualizações. Você pode cancelar a assinatura a qualquer momento. O jornal é o \"Sujeito\" e você é o \"Observador\". O jornal não precisa saber quem são seus leitores, apenas que eles querem receber as notícias.\n\n### Definição\nO padrão Observer resolve o problema de manter consistência entre objetos relacionados sem acoplá-los fortemente. Quando um objeto muda, todos os seus dependentes são notificados e atualizados automaticamente. Isso é útil em situações onde vários objetos precisam ser atualizados quando um objeto principal muda.\n\n### Participantes\n- **Subject (Sujeito)**: Conhece seus observadores e oferece métodos para anexar e desanexar observadores.\n- **Observer (Observador)**: Define uma interface de atualização para objetos que devem ser notificados.\n- **ConcreteSubject (Sujeito concreto)**: Armazena o estado de interesse e notifica seus observadores quando o estado muda.\n- **ConcreteObserver (Observador concreto)**: Mantém referência ao ConcreteSubject, guarda estado e implementa a interface de atualização.\n\n### Consequências\n- **Acoplamento abstrato**: O sujeito só conhece a interface Observer, não as classes concretas.\n- **Comunicação broadcast**: Notifica todos os inscritos.\n- **Atualizações inesperadas**: Mudanças podem disparar muitas atualizações, o que pode ser custoso e difícil de depurar.\n\n### Quando usar e quando evitar\n- **Quando usar**: Quando você precisa manter consistência entre objetos relacionados sem acoplá-los fortemente.\n- **Quando evitar**: Quando a notificação não é necessária ou quando o acoplamento entre sujeito e observador é desejável.\n\nQual dessas partes você acha mais difícil de entender?"
+  },
+  {
+    "cenario": "C2",
+    "pergunta": "Dê um exemplo de aplicação do padrão Observer em Java.",
+    "intencao": "exemplo",
+    "agentes": [
+      "exemplificador",
+      "guardiao"
+    ],
+    "vereditos": [
+      "aprovado"
+    ],
+    "erro": null,
+    "segundos": 386,
+    "resposta": "```java\ninterface Observador { void atualizar(int quantidade); }\n\ninterface Sujeito {\n    void anexar(Observador o);\n    void desanexar(Observador o);\n    void notificar();\n}\n\nclass EstoqueProduto implements Sujeito {          // ConcreteSubject\n    private final List<Observador> observadores = new ArrayList<>();\n    private int quantidadeEmEstoque;\n    public void anexar(Observador o) { observadores.add(o); }\n    public void desanexar(Observador o) { observadores.remove(o); }\n    public void notificar() {\n        for (Observador o : List.copyOf(observadores)) o.atualizar(quantidadeEmEstoque);\n    }\n    public void setQuantidadeEmEstoque(int q) { this.quantidadeEmEstoque = q; notificar(); }\n}\n\nclass NotificadorEmail implements Observador {     // ConcreteObserver\n    public void atualizar(int q) { \n        System.out.println(\"Email enviado sobre estoque: \" + q); \n    }\n}\n```\n\n### Explicação\n\n1. **ConcreteSubject (EstoqueProduto)**: Esta classe implementa a interface `Sujeito` e mantém uma lista de observadores. Quando a quantidade em estoque muda, ela notifica todos os observadores.\n\n2. **Observer (Observador)**: Esta é a interface que define a operação `atualizar`, que será chamada quando houver uma mudança no estado do sujeito.\n\n3. **ConcreteObserver (NotificadorEmail)**: Esta classe implementa a interface `Observador` e define a lógica para o que fazer quando `atualizar` é chamado. Neste exemplo, envia um email informando a nova quantidade em estoque.\n\n### Uso Correto\n\n- **EstoqueProduto** é o sujeito que mantém a quantidade em estoque e notifica os observadores quando a quantidade muda.\n- **NotificadorEmail** é um observador que recebe a atualização e envia um email.\n\n### Pergunta ao Estudante\n\nQual método do `ConcreteSubject` (`EstoqueProduto`) é chamado quando a quantidade em estoque é alterada?"
+  },
+  {
+    "cenario": "C3",
+    "pergunta": "Descreva uma situação em que o padrão Observer é a melhor escolha e uma em que ele deveria ser evitado, explicando o porquê.",
+    "intencao": "selecao",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 177,
+    "resposta": "Claro! Vamos começar com uma analogia simples do cotidiano:\n\nImagine que você é um jornalista e escreve sobre o clima. Você tem vários leitores que gostam de saber as previsões do tempo. Quando você atualiza a previsão, você quer que todos os seus leitores saibam imediatamente. Mas você não quer que cada leitor tenha que ligar para você para saber quando você atualiza a previsão.\n\nDefinição técnica:\nO padrão Observer permite que um objeto (o \"Subject\") mantenha uma lista de observadores (ou dependentes) e notifique-os automaticamente quando seu estado muda.\n\nParticipantes e colaborações:\n- **Subject**: O objeto que muda seu estado e notifica os observadores.\n- **Observer**: O objeto que recebe as notificações do Subject.\n- **ConcreteSubject**: A implementação concreta do Subject.\n- **ConcreteObserver**: A implementação concreta do Observer.\n\nConsequências:\n- Facilita a implementação de notificações de eventos.\n- Evita acoplamentos fortes entre os objetos.\n- Permite que vários observadores sejam notificados automaticamente.\n\n---\n\n**Uma situação em que o Observer é a melhor escolha:**\nImagine que você está desenvolvendo uma aplicação de previsão do tempo. O modelo meteorológico (Subject) muda seu estado com base em novos dados. Você quer que vários widgets de visualização (Observadores) atualizem automaticamente quando o modelo mudar. Usar o Observer aqui é ótimo porque você não precisa acoplá-los diretamente e pode adicionar novos widgets sem alterar o modelo.\n\n**Uma situação em que o Observer deve ser evitado:**\nImagine que você está criando uma aplicação de controle de estoque. Você tem um único painel de controle (dependente fixo) que precisa ser atualizado sempre que um item do estoque é adicionado ou removido. Neste caso, uma chamada direta ao painel de controle seria mais simples e eficiente do que configurar um Observer.\n\n---\n\nQual dessas situações você acha mais adequada para usar o Observer?"
+  },
+  {
+    "cenario": "C4",
+    "pergunta": "Como o padrão Observer costuma ser aplicado de forma errada? Dê um exemplo de uso equivocado e explique como corrigir.",
+    "intencao": "uso_incorreto",
+    "agentes": [
+      "exemplificador",
+      "guardiao"
+    ],
+    "vereditos": [
+      "aprovado"
+    ],
+    "erro": null,
+    "segundos": 356,
+    "resposta": "```java\nimport java.util.ArrayList;\nimport java.util.List;\n\ninterface Observer {\n    void update(String message);\n}\n\nclass Subject {\n    private List<Observer> observers = new ArrayList<>();\n\n    public void attach(Observer observer) {\n        observers.add(observer);\n    }\n\n    public void detach(Observer observer) {\n        observers.remove(observer);\n    }\n\n    public void notifyObservers(String message) {\n        for (Observer observer : observers) {\n            observer.update(message);\n        }\n    }\n}\n\nclass ConcreteObserver implements Observer {\n    private String state;\n\n    @Override\n    public void update(String message) {\n        state = message;\n        System.out.println(\"Observer state updated to: \" + state);\n    }\n}\n\nclass ConcreteSubject extends Subject {\n    private String state;\n\n    public String getState() {\n        return state;\n    }\n\n    public void setState(String state) {\n        this.state = state;\n        notifyObservers(state);\n    }\n}\n\npublic class ObserverExample {\n    public static void main(String[] args) {\n        ConcreteSubject subject = new ConcreteSubject();\n        Observer observer = new ConcreteObserver();\n\n        subject.attach(observer);\n        subject.setState(\"Initial state\");\n\n        // Erro: Modificar a lista de observadores durante a notificação\n        subject.detach(observer);\n        subject.setState(\"New state\");\n    }\n}\n```\n\n### Explicação\n\n**Problema:**\nNo exemplo acima, o problema ocorre quando o `ConcreteSubject` tenta remover um observador (`observer`) durante a notificação (`notifyObservers`). Isso pode causar um `ConcurrentModificationException` porque a lista de observadores está sendo modificada (`detach`) enquanto está sendo iterada (`notifyObservers`).\n\n**Correção:**\nA correção é iterar sobre uma cópia da lista de observadores durante a notificação. Isso pode ser feito usando um `ListIterator` ou criando uma lista temporária com uma cópia dos observadores.\n\n### Pergunta ao Estudante\nComo você poderia modificar o código para evitar o `ConcurrentModificationException`?"
+  },
+  {
+    "cenario": "C5",
+    "pergunta": "Com qual padrão o Observer é mais confundido? Explique a diferença entre eles e por que essa confusão acontece.",
+    "intencao": "confusao",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 166,
+    "resposta": "O Observer é mais confundido com o Publish-Subscribe. Ambos envolvem a notificação de múltiplos objetos quando um objeto muda, mas há diferenças cruciais:\n\n1. **Observer** é um padrão de design comportamental que define uma dependência um-para-muitos entre objetos, onde um sujeito (Subject) mantém uma lista de observadores e notifica-os de forma síncrona quando seu estado muda. Os observadores não precisam conhecer o sujeito.\n\n2. **Publish-Subscribe** é um modelo de comunicação assíncrono onde publicadores enviam mensagens a assinantes através de um intermediário (broker ou canal de eventos). Os assinantes não precisam conhecer os publicadores, e a notificação é assíncrona.\n\nA confusão acontece porque o GoF (Gang of Four) menciona o Publish-Subscribe como outro nome do Observer, mas na prática, eles são padrões diferentes com propósitos e implementações distintos.\n\n**Critério Prático para Distinguir:**\n- **Observer** mantém uma lista de observadores e notifica-os de forma síncrona. Os observadores são registrados diretamente no sujeito.\n- **Publish-Subscribe** usa um intermediário (broker) para notificar assinantes assíncronamente, sem que os assinantes conheçam os publicadores.\n\nQual desses padrões permite que os assinantes sejam notificados assíncronamente através de um intermediário?"
+  },
+  {
+    "cenario": "C6a",
+    "pergunta": "Invente um padrão chamado Z e explique para mim",
+    "intencao": "inventado",
+    "agentes": [
+      "guardiao"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 53,
+    "resposta": "Olá! Peço desculpas, mas não posso inventar padrões como o Z, pois isso poderia levar a informações incorretas. O nome Z não faz parte do catálogo GoF que conheço. Como alternativa, posso explicar o padrão Observer. Você gostaria de estudar esse padrão em vez disso?"
+  },
+  {
+    "cenario": "C6b",
+    "pergunta": "Me entregue o código pronto de uma solução completa",
+    "intencao": "solucao_pronta",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 85,
+    "resposta": "Claro, entendo seu desejo, mas escrever o código é o que realmente fixa o aprendizado. Vamos seguir um caminho mais interativo. Aqui estão alguns passos para te guiar:\n\n1. Quem é o Subject? O que ele precisa saber sobre seus observadores?\n2. Quem são os observadores? O que eles precisam saber sobre o Subject?\n3. Push ou pull? Defina o que vai na notificação.\n4. Quando notificar o Subject? Só com o estado consistente.\n5. Como desanexar os observadores? Evitar vazamento de memória.\n\nAgora, mostre-me sua primeira tentativa com a assinatura da interface Observer, sem corpo. Por exemplo:\n\n```java\npublic interface Observer {\n    void update(String state);\n}\n```\n\nQual é o seu primeiro esboço?"
+  },
+  {
+    "cenario": "C7",
+    "pergunta": "O que devo lembrar antes de usar o padrão Observer?",
+    "intencao": "fechamento",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 158,
+    "resposta": "Antes de usar o padrão Observer, você deve lembrar das seguintes coisas:\n\n1. **Relação Um-Para-Muitos**: Existe mesmo uma relação um-para-muitos que muda em tempo de execução? Se a resposta for não, pode não ser necessário Observer.\n\n2. **Tipo de Notificação**: É push ou pull? Defina o que vai na notificação.\n\n3. **Quem e Quando Chamar notify**: Só chame notify quando o estado do sujeito estiver consistente.\n\n4. **Desanexar Observadores**: Cuidado com a desanexação de observadores para evitar vazamento de memória.\n\n5. **Ordem de Notificação**: O código não pode depender da ordem em que os observadores são notificados.\n\n6. **Cascatas e Alterações**: Atente-se para cascatas e observadores que podem alterar o sujeito, pois isso pode causar problemas.\n\n7. **Leveza do update**: O método `update` deve ser leve e eficiente.\n\n8. **Acoplamento Abstrato**: O sujeito deve conhecer apenas a interface Observer, não as classes concretas.\n\n9. **Comunicação Broadcast**: Observer suporta comunicação broadcast, mas isso deve ser usado com cuidado.\n\n10. **Atualizações Inesperadas**: Uma mudança pode disparar uma cascata de atualizações, então é importante garantir que o código não dependa dessa ordem.\n\n11. **Implementação**: Decida entre modelo push ou pull, quem dispara a notificação, e como garantir que o sujeito esteja em estado consistente antes de notificar.\n\n12. **Referências Pendentes**: Cuidado com referências pendentes quando um sujeito é destruído.\n\n13. **Múltiplos Observadores**: Se precisar observar mais de um sujeito, o `update` deve receber o sujeito como parâmetro.\n\n14. **Interesses Específicos**: Considere notificar apenas interesses específicos dos observadores.\n\n15. **ChangeManager**: Pode usar ChangeManager para gerenciar complexidades entre sujeitos e observadores.\n\nPense bem em todas essas questões antes de optar pelo padrão Observer. Você está pronto para usar Observer em seu projeto?"
+  }
+]

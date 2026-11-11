@@ -5,3 +5,4 @@ __pycache__/
 .gradio/
 logs/
 .sessoes/
+docs/relatorio/

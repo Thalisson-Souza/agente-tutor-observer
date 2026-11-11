@@ -7,11 +7,7 @@ Cada tarefa aponta para o requisito ou cenário de [requisitos.md](requisitos.md
 
 | # | Tarefa | Atende | Notas |
 |---|---|---|---|
-| T1 | Script `tests/cenarios.py`: roda C1–C7 no modelo e salva respostas e tempos em `docs/evidencias/` | R3, R4, C1–C7 | evidência para o relatório e roteiro da demo |
-| T2 | Rodar C2, C3, C4 e C7 no 7b e corrigir o que falhar | R3, C2–C4, C7 | |
-| T3 | Medir e reduzir o tempo das rotas com Guardião (exemplo, uso_incorreto, resposta_exercicio) | R3 | única medida com revisão: 366–433 s |
-| T4 | Ajustar orientação do `solucao_pronta`: saiu "Quando notificar o Subject?" (é o Subject que notifica) | C6b | redação |
-| T5 | `requirements.txt` (`uv pip freeze`) e README | R8 | |
+| T3 | Tempo: hoje 53–238 s por resposta; testar Vulkan na Iris Xe (T9) para reduzir mais | R3 | |
 | T6 | Testar com a rede desligada | R7 | |
 | T7 | Template do caderno de evidências para a sessão em sala | entregável 6 | |
 | T8 | Opcional: Gradio | R9 | |
@@ -37,3 +33,7 @@ Cada tarefa aponta para o requisito ou cenário de [requisitos.md](requisitos.md
 | 10/11 | Pacotes por camada | 4 |
 | 10/11 | Orientações para `rotas.yaml`, `Resultado` no núcleo, decisão de revisão única | 5 |
 | 10/11 | Pasta `sdd/` (requisitos, design, tarefas, iterações) | 6 |
+| 10/11 | T5: README (Linux) e requirements.txt com versões fixas; repositório no GitHub | — |
+| 11/11 | T1: script `tests/cenarios.py` e primeira execução completa do roteiro | 7 |
+| 11/11 | T2, T4, T10–T12: C4, C7, C1/C3, C5 e C6b corrigidos; Guardião fora de exemplo/uso incorreto; os 8 cenários passam | 8 |
+| 11/11 | Relatório no Google Docs: seção 1 e 4.4 preenchidas; instruções da professora marcadas em azul | — |
