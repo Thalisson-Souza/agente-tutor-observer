@@ -1,0 +1,38 @@
+[
+  {
+    "cenario": "C3",
+    "pergunta": "Descreva uma situação em que o padrão Observer é a melhor escolha e uma em que ele deveria ser evitado, explicando o porquê.",
+    "intencao": "selecao",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 147,
+    "resposta": "Claro! Vamos analisar uma situação em que o padrão Observer é a melhor escolha e outra em que ele deveria ser evitado.\n\n**Situção em que o Observer é a melhor escolha:**\nImagine uma aplicação de previsão do tempo. O **Subject** seria a classe `TempoAtual`, que armazena as condições atuais do tempo. Os **Observadores** seriam as várias `TelasDeExibição` que mostram o tempo em diferentes formatos, como gráficos, tabelas ou notificações visuais. Quando `TempoAtual` muda (por exemplo, quando há uma atualização do servidor de previsão do tempo), todas as `TelasDeExibição` são notificadas e atualizadas automaticamente. Isso mantém a separação de responsabilidades e evita que a classe `TempoAtual` saiba detalhes sobre as telas de exibição.\n\n**Situção em que o Observer deve ser evitado:**\nConsidere uma aplicação simples de cadastro de usuários. Se a classe `GerenciadorDeUsuarios` precisa atualizar apenas um formulário de cadastro quando um novo usuário é adicionado, uma chamada direta para o formulário seria mais simples e eficiente. Neste caso, a ordem das notificações não é crucial, e a atualização é rara, então o custo de implementar o Observer seria desnecessariamente alto.\n\n**Pergunta ao estudante:**\nEm uma aplicação de gerenciamento de estoque, onde a classe `Produto` é atualizada com novas informações de estoque, e várias `TelasDeEstoque` precisam ser atualizadas automaticamente, qual padrão seria mais apropriado?"
+  },
+  {
+    "cenario": "E3",
+    "pergunta": "Qual é a capital da França?",
+    "intencao": "conceito",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 28,
+    "resposta": "Não sei com segurança qual é a capital da França, mas este tutor ensina o padrão Observer. Você gostaria de saber mais sobre esse padrão ou sobre algum outro assunto relacionado a programação orientada a objetos?"
+  },
+  {
+    "cenario": "E4",
+    "pergunta": "O Observer é um padrão criacional, né?",
+    "intencao": "confirmacao",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 113,
+    "resposta": "A afirmação está errada. O Observer é um padrão comportamental, não criacional. O Observer se concentra em definir a dependência entre objetos para notificações, enquanto os padrões criacionais se preocupam com a criação de objetos de forma flexível e indireta. Você entende por que o Observer é considerado comportamental?"
+  }
+]

@@ -8,9 +8,9 @@ Cada tarefa aponta para o requisito ou cenário de [requisitos.md](requisitos.md
 | # | Tarefa | Atende | Notas |
 |---|---|---|---|
 | T3 | Tempo: hoje 53–238 s por resposta; testar Vulkan na Iris Xe (T9) para reduzir mais | R3 | |
-| T6 | Testar com a rede desligada | R7 | |
-| T7 | Template do caderno de evidências para a sessão em sala | entregável 6 | |
-| T8 | Opcional: Gradio | R9 | |
+| T6 | Testar com a rede desligada (CLI, Rich e `--web`) | R7, R10 | |
+| T14 | Rodar o roteiro e os casos-limite no `qwen2.5:3b` e comparar com o 7b (qualidade × tempo) | R3, D19 | evidência para o relatório e para avisar na demo o que o 3b erra |
+| T7 | Preencher o caderno de evidências na sessão (template pronto no Google Docs) | entregável 6 | |
 | T9 | Opcional: acelerar com Vulkan na Iris Xe | R3 (tempo) | exige configurar o serviço do Ollama com sudo |
 
 ## Melhorias anotadas, não priorizadas
@@ -37,3 +37,6 @@ Cada tarefa aponta para o requisito ou cenário de [requisitos.md](requisitos.md
 | 11/11 | T1: script `tests/cenarios.py` e primeira execução completa do roteiro | 7 |
 | 11/11 | T2, T4, T10–T12: C4, C7, C1/C3, C5 e C6b corrigidos; Guardião fora de exemplo/uso incorreto; os 8 cenários passam | 8 |
 | 11/11 | Relatório no Google Docs: seção 1 e 4.4 preenchidas; instruções da professora marcadas em azul | — |
+| 11/11 | Template do caderno de evidências no Google Docs (critérios 0–2, 8 cenários, 3 sistemas, síntese) | — |
+| 11/11 | T8: chat de terminal com Rich (D14) | — |
+| 11/11 | T13: interface web com Gradio 6.31.0, opcional (D15) | — |

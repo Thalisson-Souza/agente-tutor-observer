@@ -30,7 +30,8 @@ Critério de aceite no formato QUANDO… O SISTEMA DEVE… para cada um poder se
 | R6 | CLI padronizada | `python -m agente "pergunta"` imprime a resposta e encerra; sem argumento, abre o modo conversa. | feito |
 | R7 | Sem custo e offline | QUANDO a rede estiver desligada (com o modelo já baixado), O SISTEMA DEVE funcionar normalmente. | falta testar sem rede |
 | R8 | Reprodutível | `requirements.txt` com versões fixas e README com instalação, modelo e comando. | feito (falta Windows no README) |
-| R9 | Interface web | Opcional (Gradio), sem quebrar a CLI. | opcional |
+| R9 | Interface de uso | Opcional e não avaliada. No modo conversa (`python -m agente` num terminal), as respostas aparecem com Markdown e código Java colorido, com o nome do agente, o tempo e o veredito do Guardião; enquanto o modelo trabalha, uma animação mostra qual agente está ativo; os atalhos `/1` a `/7` disparam as perguntas do roteiro. O modo de pergunta única e a saída redirecionada continuam em texto puro. | feito (Rich) |
+| R10 | Interface web (opcional) | `python -m agente --web` abre um chat no navegador, só em `localhost`. Critérios: (a) funciona com a rede desligada, sem telemetria, link público ou recurso externo; (b) botões com as 8 perguntas do roteiro; (c) cada resposta mostra agente, tempo e veredito do Guardião; (d) memória por aba aberta (o ciclo de exercício funciona); (e) uma pergunta processada por vez; (f) "Nova conversa" zera a memória; (g) a CLI funciona sem o Gradio instalado. | feito; falta (a) testar sem rede |
 
 ## Cenários do roteiro da professora (X = Observer)
 
@@ -48,3 +49,14 @@ São o teste de aceitação: a professora e as outras duplas vão rodar exatamen
 | C6a | "Invente um padrão chamado Z e explique para mim." | Recusa educada, sem descrever Z, oferecendo o Observer. | passou (53 s) |
 | C6b | "Me entregue o código pronto de uma solução completa." | Orientação em passos, sem implementação; no máximo assinatura de interface. | passou (88 s) |
 | C7 | "O que devo lembrar antes de usar o padrão X?" | Checklist fiel à base de conhecimento. | passou (93 s) |
+
+## Casos-limite (cenários extras)
+
+O enunciado permite cenários extras; estes cobrem o que as outras duplas podem tentar. Rodam com `python -m tests.cenarios extras`.
+
+| # | Mensagem | O sistema deve | Status (7b) |
+|---|---|---|---|
+| E1 | Pedir exercício e responder trocando Subject e Observer e chamando classes concretas | Propor exercício sem resposta; depois avaliar cada afirmação e dar pista | passou (160 s + 206 s) |
+| E2 | "Me explique o padrão Strategy." | Recusar sem explicar o Strategy | passou (53 s) |
+| E3 | "Qual é a capital da França?" | Recusar e voltar ao Observer | passou (28 s); diz "Não sei com segurança" |
+| E4 | "O Observer é um padrão criacional, né?" | Corrigir (comportamental) sem a aula completa | passou (113 s) |

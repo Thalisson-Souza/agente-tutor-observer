@@ -92,3 +92,42 @@ Registro cronológico: o que mudou, como foi testado, o resultado. Uma entrada p
 - Correção da regressão do C2: orientação do exemplo proíbe seção de uso incorreto e regras fora da base. C2 de novo (`cenarios_2026-11-11_1942_qwen2.5-7b.md`): correto, 4 papéis indicados, 216 s.
 - Resultado: os 8 cenários passam; tempo por resposta entre 53 e 238 s (antes até 386 s).
 - Lição: o que mais melhorou a correção foi dar ao modelo o exemplo certo na base, não a revisão por outro agente.
+
+## 2026-11-11 — Iteração 9: interfaces (Rich e Gradio) e casos-limite
+- Chat de terminal com Rich (D14) e chat web com Gradio 6.31.0, opcional (D15). Gradio exigiu descer o `pillow` de 13.0.0 para 12.3.0; `pip check` sem conflitos.
+- Bug achado no uso real da web: após clicar num botão, a tela não mudava durante a espera; o usuário clicou em outro botão e a segunda pergunta entrou na fila. Correção: mensagem "⏳ Pensando…" imediata no chat e caixa e botões travados até a resposta chegar. Verificado no navegador com orquestrador falso de 20 s: botões travados durante a espera e liberados com a resposta.
+- Casos-limite no 7b (`docs/evidencias/cenarios_2026-11-11_2020_qwen2.5-7b.md`):
+
+| Caso | Tempo | Avaliação |
+|---|---|---|
+| E1.1 pedir exercício | 111 s | Correto, sem dar a resposta |
+| E1.2 resposta errada | 418 s | Parcial: pegou a troca Subject/Observer, ignorou o sujeito chamando classes concretas; Guardião corrigiu e levou ~7 min |
+| E2 "explique o Strategy" | 220 s | Falhou: disse "não sei" e explicou o Strategy mesmo assim, depois uma aula completa com "quando evitar" inventado |
+| E3 fora do tema | 93 s | Recusou, mas emendou a aula completa |
+| E4 afirmação errada | 112 s | Corrigiu (comportamental), mas emendou a aula completa |
+
+- Causa comum de E2 a E4: sem palavra-chave, a mensagem cai em "conceito", cuja orientação pede a explicação completa.
+
+## 2026-11-11 — Iteração 10: casos-limite corrigidos
+- Mudanças: rota `fora_escopo` (outro padrão do GoF sem citar o Observer; o Tutor recusa e não explica o outro padrão); rota `confirmacao` (afirmação para confirmar vai ao Inquiridor: certo ou errado, porquê em 2–3 frases, pergunta de verificação); orientação de conceito para fora do tema; avaliação de exercício afirmação por afirmação; Guardião retirado também da avaliação de exercício (D16); orientação de seleção nomeia Subject e dependentes e termina com caso novo.
+- Execuções: `cenarios_2026-11-11_2046_*` (E1–E4) e `cenarios_2026-11-11_2051_*` (C3, E3, E4).
+
+| Caso | Antes | Depois | Avaliação |
+|---|---|---|---|
+| E1.2 resposta errada | 418 s, 1 de 2 erros | 206 s | Avaliou as 3 afirmações, inclusive as classes concretas |
+| E2 Strategy | 220 s, explicou o Strategy | 53 s | Recusou sem explicar |
+| E3 fora do tema | 93 s, aula completa | 28 s | Recusa curta; ainda diz "Não sei com segurança" (limitação aceita) |
+| E4 "é criacional, né?" | 112 s, aula com erro | 113 s | Correção em 3 frases, sem erro |
+| C3 seleção | 136 s, papel do botão trocado | 147 s | Nomeia Subject e dependentes; pergunta com caso novo |
+
+- Limitação aceita: no E3 a regra anti-alucinação do Tutor ("diga 'Não sei com segurança'") vence a orientação da rota. Mudar a regra para corrigir a redação poderia enfraquecer a anti-alucinação.
+
+## 2026-11-11 — Iteração 11: layout e tema da interface web
+- Layout em duas colunas: barra lateral com o roteiro agrupado (Entender, Código, Limites do tutor), "Praticar" (pede exercício, para mostrar memória e feedback), "Nova conversa" e "Como funciona"; chat à direita com botão "Enviar"; selo com o modelo e "local · sem internet". Rodapé de propaganda do Gradio removido.
+- Tema "Minimal" da comunidade (Apache 2.0) guardado em `agente/interface/tema/` (D18).
+- Problema encontrado ao verificar: mesmo com as fontes trocadas no código, a página pedia Source Sans Pro e Ubuntu Mono ao Google Fonts, porque o JSON trazia a lista de endereços pronta. Corrigido limpando essa lista e gerando a regra da fonte local. Verificado no navegador: zero pedidos externos e Source Sans 3 carregada localmente.
+- Fluxo verificado com orquestrador falso: Praticar, indicador "Inquiridor trabalhando… N s", botões travados e liberados, resposta com rodapé.
+
+## 2026-11-11 — Iteração 12: acabamento da web e troca de modelo
+- Layout ajustado para telas largas: barra lateral com largura fixa (~240–280 px), botões alinhados à esquerda, títulos de grupo discretos e rolagem própria; chat na largura restante e na altura da janela (`calc(100vh - 200px)`), mensagens em modo painel; cabeçalho numa linha com o selo "modelo local · sem internet". Parâmetros de abertura do servidor reunidos em `lancar()`.
+- Troca de modelo (D19): seletor na barra lateral (web) e `/modelo 3b|7b` (terminal). Verificado no navegador com orquestrador falso: a primeira resposta saiu com "qwen2.5:7b", a segunda, depois da troca, com "qwen2.5:3b", na mesma conversa. Teste de unidade confirma que a memória passa para o novo modelo.

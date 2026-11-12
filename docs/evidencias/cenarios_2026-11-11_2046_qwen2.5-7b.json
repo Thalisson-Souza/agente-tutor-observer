@@ -1,0 +1,62 @@
+[
+  {
+    "cenario": "E1.1",
+    "pergunta": "Quero praticar com um exercício sobre o Observer.",
+    "intencao": "exercicio",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 160,
+    "resposta": "Certo, vamos lá! Imagine que você está desenvolvendo um sistema de notícias online. O sistema precisa notificar os usuários quando há novas atualizações na página de notícias.\n\n**Exercício:**\n1. Quem seria o **Subject** neste cenário?\n2. Quem seriam os **Observadores**?\n3. Como o **Subject** notificaria os **Observadores**?\n\nAgora, pense sobre essas perguntas e responda. Quem seria o **Subject** neste sistema de notícias online?"
+  },
+  {
+    "cenario": "E1.2",
+    "pergunta": "Acho que a estação é o observador e os painéis são o Subject, e a estação chama cada painel direto pelo nome da classe.",
+    "intencao": "resposta_exercicio",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 206,
+    "resposta": "Entendi sua resposta. Vamos analisar cada parte:\n\n1. **A estação é o observador**: Isso está errado. Na estrutura Observer, o Subject é quem notifica os Observadores, não o contrário. No seu exemplo, a estação é o sujeito, pois ela é quem notifica os painéis.\n\n2. **Os painéis são o Subject**: Isso também está errado. Os painéis são os observadores, pois eles recebem as atualizações da estação.\n\n3. **A estação chama cada painel direto pelo nome da classe**: Isso está errado. No padrão Observer, o sujeito notifica os observadores através de uma interface, não diretamente pelo nome da classe.\n\n**Pista**: Pense no sujeito como o responsável por notificar todos os observadores através de uma interface. O sujeito não conhece as classes concretas dos observadores, apenas suas interfaces.\n\n**Exercício para você responder**: Quem são os observadores neste cenário? Como o sujeito notifica os observadores?"
+  },
+  {
+    "cenario": "E2",
+    "pergunta": "Me explique o padrão Strategy.",
+    "intencao": "fora_escopo",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 53,
+    "resposta": "Este tutor ensina apenas o padrão Observer. Não explico outros padrões como Strategy. O Strategy e o Observer são diferentes e não estão diretamente relacionados. Você gostaria de saber mais sobre o Observer?"
+  },
+  {
+    "cenario": "E3",
+    "pergunta": "Qual é a capital da França?",
+    "intencao": "conceito",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 90,
+    "resposta": "Não sei com segurança qual é a capital da França. Este tutor ensina o padrão Observer. Você gostaria de saber sobre como o padrão Observer resolve problemas em programação orientada a objetos?"
+  },
+  {
+    "cenario": "E4",
+    "pergunta": "O Observer é um padrão criacional, né?",
+    "intencao": "conceito",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 78,
+    "resposta": "Não, o Observer não é um padrão criacional. É um padrão comportamental de objetos. Vamos começar com uma analogia simples: imagine que você assina um jornal. Quando há novidades, você recebe as atualizações. O jornal é o sujeito, e você é o observador. Agora, vamos definir técnicamente: o Observer define uma dependência um-para-muitos entre objetos, permitindo que um sujeito notifique seus observadores automaticamente quando o estado muda. Os participantes são o Subject, que conhece seus observadores e notifica-os; o Observer, que define a interface de atualização; o ConcreteSubject, que notifica seus observadores; e o ConcreteObserver, que mantém estado consistente com o do sujeito.\n\nAs consequências incluem suporte a comunicação broadcast, mas também podem levar a atualizações inesperadas e acoplamento entre sujeito e observador. Você sabe quando usar o Observer?"
+  }
+]

@@ -1,0 +1,65 @@
+[
+  {
+    "cenario": "E1.1",
+    "pergunta": "Quero praticar com um exercício sobre o Observer.",
+    "intencao": "exercicio",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 111,
+    "resposta": "Imagine uma aplicação de um sistema de notícias onde os usuários podem se inscrever para receber atualizações sobre as últimas notícias. Neste cenário:\n\n1. Quem seria o Subject? Quem são os Observadores?\n\n2. Se um usuário se inscreve para receber notícias, qual método do Observer (ConcreteObserver) seria chamado quando uma nova notícia é adicionada ao sistema?\n\nPense sobre essas perguntas e responda!"
+  },
+  {
+    "cenario": "E1.2",
+    "pergunta": "Acho que a estação é o observador e os painéis são o Subject, e a estação chama cada painel direto pelo nome da classe.",
+    "intencao": "resposta_exercicio",
+    "agentes": [
+      "inquiridor",
+      "guardiao"
+    ],
+    "vereditos": [
+      "corrigido"
+    ],
+    "erro": null,
+    "segundos": 418,
+    "resposta": "Entendi o seu pensamento, mas há alguns conceitos equivocados. Na aplicação de notícias, a **Estação** (que armazena as notícias) seria o **Subject**, e os **Painéis** (que exibem as notícias) seriam os **Observadores**.\n\nVocê está confundindo o **Subject** com o **Observer**. O **Subject** é quem notifica os **Observadores**, enquanto os **Observadores** são aqueles que recebem as atualizações.\n\n**Pista:** Pense no **Subject** como aquele que tem o estado de interesse e notifica os **Observadores** quando esse estado muda. No caso das notícias, a **Estação** é quem tem o estado das notícias e notifica os **Painéis** quando uma nova notícia é adicionada.\n\nTente responder de novo, focando na identificação do **Subject** e dos **Observadores** nesta situação.\n\nQual é o **Subject** e quais são os **Observadores** nesta aplicação de notícias?"
+  },
+  {
+    "cenario": "E2",
+    "pergunta": "Me explique o padrão Strategy.",
+    "intencao": "conceito",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 220,
+    "resposta": "Não sei com segurança como explicar o padrão Strategy, pois este padrão não faz parte do padrão de projeto Observer. O Strategy é um padrão de projeto comportamental que permite que um algoritmo se comporte de diferentes maneiras dependendo do contexto. Ele define uma família de algoritmos, encapsula cada um deles e faz com que eles sejam intercambiáveis.\n\nVamos voltar ao Observer. Imagine que você assina um jornal. Quando há novidades, você é notificado. Esse é o conceito básico do Observer.\n\nEm termos técnicos, o Observer é um padrão de projeto comportamental que define uma dependência um-para-muitos entre objetos, de modo que quando um objeto muda de estado, todos os seus dependentes são notificados e atualizados automaticamente.\n\nOs participantes são:\n- **Subject (Sujeito)**: conhece seus observadores e oferece interface para anexar e desanexar observadores.\n- **Observer (Observador)**: define uma interface de atualização para objetos que devem ser notificados.\n- **ConcreteSubject (Sujeito concreto)**: notifica seus observadores quando o estado muda.\n- **ConcreteObserver (Observador concreto)**: mantém estado consistente com o do sujeito e implementa update.\n\nAs consequências incluem suporte a comunicação broadcast, acoplamento abstrato entre sujeito e observador, mas também podem levar a atualizações inesperadas e questões de implementação.\n\nQuando usar o Observer? Quando você precisa de uma comunicação broadcast entre objetos, onde um sujeito pode notificar múltiplos observadores de forma eficiente.\n\nQuando evitar? Quando a comunicação não precisa ser bidirecional ou quando a notificação não envolve múltiplos observadores.\n\nQual é a sua dúvida sobre o Observer?"
+  },
+  {
+    "cenario": "E3",
+    "pergunta": "Qual é a capital da França?",
+    "intencao": "conceito",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 93,
+    "resposta": "Não podemos discutir a capital da França aqui, pois o tópico é o padrão Observer de orientação a objetos. Vamos falar sobre o Observer.\n\nImagine que você assina um jornal. Quando há novidades, você recebe notícias. Mas você não precisa saber quem são os outros assinantes. Isso é semelhante ao Observer.\n\n**Definição técnica:** O padrão Observer resolve o problema de manter consistência entre objetos relacionados sem acoplá-los fortemente. Um objeto (Subject) mantém uma lista de seus dependentes (Observers) e notifica-os quando o estado muda.\n\n**Participantes:**\n- **Subject:** Conhece seus Observadores e oferece métodos para anexar e desanexar Observadores.\n- **Observer:** Define a interface de atualização.\n- **ConcreteSubject:** Armazena o estado de interesse e notifica seus Observadores.\n- **ConcreteObserver:** Mantém estado consistente com o do sujeito e implementa a atualização.\n\n**Consequências:** \n- Acoplamento abstrato entre sujeito e observador.\n- Suporte a comunicação broadcast.\n- Pode haver atualizações inesperadas.\n\n**Pergunta:** Você entende como a analogia do jornal ajuda a explicar o Observer?"
+  },
+  {
+    "cenario": "E4",
+    "pergunta": "O Observer é um padrão criacional, né?",
+    "intencao": "conceito",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 112,
+    "resposta": "Não, o Observer não é um padrão criacional. O Observer é um padrão comportamental de objetos.\n\n**Analogia:**\nImagine que você assina um jornal. Quando há novidades, o jornal envia um e-mail para você. Você pode cancelar a assinatura a qualquer momento. Essa é a ideia básica do Observer: um objeto (o jornal) notifica outros objetos (os assinantes) sobre mudanças.\n\n**Definição:**\nO Observer é um padrão de projeto que define uma dependência um-para-muitos entre objetos, de modo que quando um objeto muda de estado, todos os seus dependentes são notificados e atualizados automaticamente.\n\n**Participantes:**\n- **Subject (Sujeito):** Conhece seus observadores e oferece métodos para anexar e desanexar observadores.\n- **Observer (Observador):** Define uma interface de atualização para objetos que devem ser notificados.\n- **ConcreteSubject (Sujeito concreto):** Armazena o estado de interesse e notifica seus observadores quando o estado muda.\n- **ConcreteObserver (Observador concreto):** Mantém referência ao ConcreteSubject, guarda estado e implementa a interface de atualização.\n\n**Consequências:**\n- Acoplamento abstrato entre Subject e Observer.\n- Suporte a comunicação broadcast.\n- Atualizações inesperadas podem ser um problema.\n\n**Pergunta:**\nEntendeu a diferença entre o Observer e os padrões criacionais?"
+  }
+]
