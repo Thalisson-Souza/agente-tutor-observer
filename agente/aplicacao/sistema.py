@@ -31,6 +31,8 @@ from ..regras.salvaguardas import sem_solucao_pronta
 class Orquestrador(Protocol):
     """Porta para o modelo. Implementada por agentes/orquestrador.py e, nos testes, por um falso."""
 
+    modelo: str  # nome do modelo no Ollama, registrado em cada resposta
+
     def verificar(self) -> str | None:
         """Mensagem para o estudante se o modelo estiver indisponível; None se estiver ok."""
 
@@ -93,21 +95,32 @@ class SistemaTutor:
             return aviso + "O modelo devolveu uma resposta vazia. Pode reformular a pergunta?"
 
         self.conversa.notificar(TipoEvento.TURNO_CONCLUIDO, pergunta=pergunta, resposta=texto,
-                                intencao=intencao, segundos=time.perf_counter() - inicio, modelo=config.MODELO)
+                                intencao=intencao, segundos=time.perf_counter() - inicio, modelo=self.orquestrador.modelo)
         return aviso + texto
+
+    def usar_orquestrador(self, orquestrador: Orquestrador) -> None:
+        """Troca o modelo no meio da conversa. A memória continua: o novo modelo recebe o
+        mesmo histórico."""
+        self.orquestrador = orquestrador
 
     def reiniciar(self) -> None:
         self.memoria.limpar()
 
 
-def montar_sistema(arquivo_sessao: Path | None = None, mostrar_progresso: bool = True) -> SistemaTutor:
+def montar_sistema(arquivo_sessao: Path | None = None, mostrar_progresso: bool = True,
+                   orquestrador: Orquestrador | None = None) -> SistemaTutor:
     """Liga as peças reais. Importa o orquestrador aqui para que os testes da fachada
-    não precisem carregar o CrewAI."""
-    from ..agentes.orquestrador import OrquestradorCrewAI
+    não precisem carregar o CrewAI.
+
+    `orquestrador` permite reaproveitar um já criado: a interface web monta um SistemaTutor
+    por aba do navegador, todos com o mesmo orquestrador e memórias separadas."""
+    if orquestrador is None:
+        from ..agentes.orquestrador import OrquestradorCrewAI
+        orquestrador = OrquestradorCrewAI()
 
     conversa = Conversa()
     conversa.anexar(LogArquivo(config.RAIZ / "logs" / "conversa.jsonl"))
     if mostrar_progresso:
         conversa.anexar(IndicadorProgresso())
     memoria = Memoria(config.TURNOS_HISTORICO, arquivo_sessao, config.MAX_TENTATIVAS_EXERCICIO)
-    return SistemaTutor(OrquestradorCrewAI(), memoria, conversa)
+    return SistemaTutor(orquestrador, memoria, conversa)

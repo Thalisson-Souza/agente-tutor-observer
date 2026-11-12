@@ -43,9 +43,12 @@ def interpretar_revisao(rascunho: str, revisao: str) -> tuple[str, str]:
 
 
 class OrquestradorCrewAI:
-    def __init__(self) -> None:
+    def __init__(self, modelo: str = config.MODELO) -> None:
+        # Recebido por parâmetro (e não lido do config) para as interfaces poderem ter um
+        # orquestrador por modelo e trocar entre eles sem reiniciar o programa.
+        self.modelo = modelo
         llm = LLM(
-            model=f"ollama/{config.MODELO}",
+            model=f"ollama/{modelo}",
             base_url=config.OLLAMA_URL,
             temperature=config.TEMPERATURA,
             timeout=config.TIMEOUT_SEGUNDOS,
@@ -64,8 +67,8 @@ class OrquestradorCrewAI:
         except (urllib.error.URLError, OSError, ValueError):
             return (f"Não consegui falar com o modelo local em {config.OLLAMA_URL}. "
                     "Verifique se o Ollama está rodando (`ollama serve`) e tente de novo.")
-        if config.MODELO not in modelos and f"{config.MODELO}:latest" not in modelos:
-            return f"O modelo '{config.MODELO}' não está instalado no Ollama. Rode: ollama pull {config.MODELO}"
+        if self.modelo not in modelos and f"{self.modelo}:latest" not in modelos:
+            return f"O modelo '{self.modelo}' não está instalado no Ollama. Rode: ollama pull {self.modelo}"
         return None
 
     def executar(self, rota: Rota, entradas: dict[str, str], com_revisao: bool) -> Resultado:
@@ -93,8 +96,7 @@ class OrquestradorCrewAI:
         texto, veredito = interpretar_revisao(rascunho, revisao)
         return Resultado(texto, veredito, revisao[:300])
 
-    @staticmethod
-    def _mensagem(erro: Exception) -> str:
+    def _mensagem(self, erro: Exception) -> str:
         # Classifica pelo texto porque o tipo da exceção varia com a versão do CrewAI/LiteLLM.
         # Texto não reconhecido cai na mensagem genérica.
         msg = str(erro).lower()
@@ -102,5 +104,5 @@ class OrquestradorCrewAI:
             return ("O modelo local demorou demais para responder. Tente uma pergunta mais curta "
                     "ou use TUTOR_MODELO=qwen2.5:3b.")
         if "model" in msg and "not found" in msg:
-            return f"O modelo '{config.MODELO}' não está instalado. Rode: ollama pull {config.MODELO}"
+            return f"O modelo '{self.modelo}' não está instalado. Rode: ollama pull {self.modelo}"
         return "Tive um problema ao gerar a resposta com o modelo local. Tente de novo ou reformule a pergunta."

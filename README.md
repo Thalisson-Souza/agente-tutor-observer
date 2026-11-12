@@ -69,11 +69,41 @@ Uma pergunta, responde e encerra:
 python -m agente "Explique o que é o padrão Observer e qual problema ele resolve."
 ```
 
-Conversa no terminal, com memória entre as perguntas (`nova` reinicia, `sair` encerra):
+Conversa no terminal, com memória entre as perguntas:
 
 ```bash
 python -m agente
 ```
+
+As respostas aparecem formatadas (títulos, listas e código Java colorido), com o nome do agente
+que respondeu e o tempo. Enquanto o modelo trabalha, uma animação mostra qual agente está ativo.
+Comandos: `/1` a `/7` enviam as perguntas do roteiro da professora (`/6` é o padrão inventado e
+`/6b` o pedido de código pronto), `/nova` reinicia a conversa, `/ajuda` lista os comandos e
+`/sair` encerra. `/modelo 3b` e `/modelo 7b` trocam o modelo sem perder a conversa. Para um chat
+em texto puro, use `python -m agente --simples`.
+
+### Interface web (opcional)
+
+Um chat no navegador, com botões para as perguntas do roteiro. Precisa de dependências a mais:
+
+```bash
+pip install -r requirements-web.txt
+```
+
+```bash
+python -m agente --web
+```
+
+Abre em `http://127.0.0.1:7860`, só na própria máquina, sem link público e sem envio de
+estatísticas, então também funciona sem internet. Cada aba do navegador tem sua própria conversa,
+e as perguntas são respondidas uma por vez.
+
+A tela tem uma barra lateral com as perguntas do roteiro agrupadas por tema, um seletor de modelo
+(7b, mais correto, ou 3b, mais rápido; a conversa continua ao trocar), um botão "Praticar" (pede
+um exercício) e "Nova conversa"; enquanto o modelo trabalha, o chat mostra qual
+agente está ativo e o tempo. O tema visual é o
+[Minimal](https://huggingface.co/spaces/Taithrah/Minimal), de Taithrah (Apache 2.0), guardado em
+`agente/interface/tema/` para não depender de internet.
 
 Pergunta única lembrando de uma conversa anterior:
 
@@ -111,6 +141,7 @@ python -m unittest -v
 ```
 agente/
 ├── __main__.py      linha de comando
+├── interface/       chat com Rich e chat web (Gradio)
 ├── config.py        configuração
 ├── nucleo/          intenções, rotas, eventos e erros
 ├── regras/          roteador e salvaguardas (Python puro)

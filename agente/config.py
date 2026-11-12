@@ -20,6 +20,8 @@ os.environ.setdefault("CREWAI_DISABLE_TELEMETRY", "true")
 os.environ.setdefault("CREWAI_TRACING_ENABLED", "false")
 
 MODELO = os.getenv("TUTOR_MODELO", "qwen2.5:7b")
+# Modelos oferecidos para troca nas interfaces (nome no Ollama -> descrição curta).
+MODELOS = {"qwen2.5:7b": "mais correto", "qwen2.5:3b": "mais rápido, erra mais"}
 OLLAMA_URL = os.getenv("TUTOR_OLLAMA_URL", "http://localhost:11434")
 USAR_GUARDIAO = os.getenv("TUTOR_GUARDIAO", "1") != "0"
 REVISAR_TUDO = os.getenv("TUTOR_REVISAR_TUDO") == "1"  # quais rotas revisam: Rota.revisar

@@ -4,6 +4,7 @@ O SistemaTutor recebe um OrquestradorFalso, então memória, roteamento, eventos
 tratamento de erros são testados sem chamar o modelo.
 """
 
+import io
 import tempfile
 import unittest
 from pathlib import Path
@@ -59,16 +60,31 @@ class TestRoteador(unittest.TestCase):
         self.assertEqual(classificar("me dá o código pronto", exercicio_pendente=True).intencao,
                          Intencao.SOLUCAO_PRONTA)
 
+    def test_outro_padrao_vai_para_fora_do_escopo(self):  # caso E2
+        rota = classificar("Me explique o padrão Strategy.")
+        self.assertEqual((rota.intencao, rota.detalhe), (Intencao.FORA_ESCOPO, "Strategy"))
+        # citando o Observer, é comparação; pedindo código pronto, a trava vem antes
+        self.assertEqual(classificar("Qual a diferença entre Observer e Mediator?").intencao, Intencao.CONFUSAO)
+        self.assertEqual(classificar("Me entregue o código pronto do Singleton").intencao, Intencao.SOLUCAO_PRONTA)
+
+    def test_afirmacao_para_confirmar_vai_ao_inquiridor(self):  # caso E4
+        for frase in ["O Observer é um padrão criacional, né?",
+                      "É verdade que o Subject conhece as classes concretas?",
+                      "O observador guarda referência ao sujeito, certo?"]:
+            with self.subTest(frase=frase):
+                self.assertEqual(classificar(frase).intencao, Intencao.CONFIRMACAO)
+        self.assertEqual(classificar("Me dê um exemplo, ok?").intencao, Intencao.EXEMPLO)
+
     def test_toda_intencao_tem_rota(self):
         self.assertEqual(set(ROTAS), set(Intencao))
 
 
 class TestDecisaoDeRevisao(unittest.TestCase):
-    def test_so_especialista_de_rota_marcada_e_revisado(self):
-        self.assertTrue(ROTAS[Intencao.RESPOSTA_EXERCICIO].com_revisao(guardiao_ligado=True))
-        self.assertFalse(ROTAS[Intencao.CONCEITO].com_revisao(guardiao_ligado=True))
+    def test_revisao_so_com_revisar_tudo(self):  # D16: nenhuma rota é revisada por padrão
+        for rota in ROTAS.values():
+            self.assertFalse(rota.com_revisao(guardiao_ligado=True), rota.intencao)
         self.assertTrue(ROTAS[Intencao.CONCEITO].com_revisao(guardiao_ligado=True, revisar_tudo=True))
-        self.assertFalse(ROTAS[Intencao.RESPOSTA_EXERCICIO].com_revisao(guardiao_ligado=False))
+        self.assertFalse(ROTAS[Intencao.CONCEITO].com_revisao(guardiao_ligado=False, revisar_tudo=True))
 
     def test_recusa_nunca_e_revisada(self):
         inventado = ROTAS[Intencao.INVENTADO]
@@ -131,7 +147,8 @@ class TestConversa(unittest.TestCase):
 
 
 class OrquestradorFalso:
-    def __init__(self, texto="resposta", erro=None, problema=None):
+    def __init__(self, texto="resposta", erro=None, problema=None, modelo="falso:1b"):
+        self.modelo = modelo
         self.texto, self.erro, self.problema = texto, erro, problema
         self.chamadas = []
 
@@ -197,6 +214,15 @@ class TestSistema(unittest.TestCase):
         for _ in range(3):
             sistema.resposta("o Subject é a estação")
         self.assertFalse(sistema.memoria.exercicio_pendente)
+
+    def test_troca_de_modelo_mantem_a_memoria(self):
+        sistema, _ = novo_sistema(texto="O Observer define dependência um-para-muitos.")
+        sistema.resposta("O que é Observer?")
+        outro = OrquestradorFalso(modelo="falso:2b")
+        sistema.usar_orquestrador(outro)
+        sistema.resposta("Dê um exemplo em Java")
+        self.assertIn("um-para-muitos", outro.chamadas[0][1]["historico"])
+        self.assertEqual(sistema.memoria.turnos[-1]["intencao"], "exemplo")
 
     def test_inventado_vai_ao_guardiao_sem_revisao(self):
         sistema, orq = novo_sistema()
@@ -282,6 +308,74 @@ class TestFabrica(unittest.TestCase):
             self.assertTrue(fabrica.orientacao(intencao))
         self.assertIn("Zorblax", fabrica.orientacao(Intencao.INVENTADO, "Zorblax"))
         self.assertNotIn("{detalhe}", fabrica.orientacao(Intencao.INVENTADO))
+
+
+class TestInterfaceTerminal(unittest.TestCase):
+    def test_comandos(self):
+        from agente.interface.roteiro import PERGUNTAS
+        from agente.interface.terminal import Comando, interpretar
+
+        self.assertEqual(interpretar("O que é Observer?").texto, "O que é Observer?")
+        self.assertEqual(interpretar("/3").texto, PERGUNTAS["C3"])
+        self.assertEqual(interpretar("/6").texto, PERGUNTAS["C6a"])
+        self.assertEqual(interpretar("/6b").texto, PERGUNTAS["C6b"])
+        self.assertEqual(interpretar(" /SAIR ").acao, "sair")
+        self.assertEqual(interpretar("/nova").acao, "nova")
+        self.assertEqual(interpretar("/9").acao, "invalido")
+        self.assertEqual(interpretar("/modelo 3b"), Comando("modelo", "qwen2.5:3b"))
+        self.assertEqual(interpretar("/modelo qwen2.5:7b"), Comando("modelo", "qwen2.5:7b"))
+        self.assertEqual(interpretar("/modelo").acao, "modelo")
+        self.assertEqual(interpretar("/modelo 70b").acao, "invalido")
+
+    def test_conversa_mostra_agente_tempo_e_veredito(self):
+        from rich.console import Console
+        from agente.interface import terminal
+        from agente.nucleo.eventos import TipoEvento
+
+        class OrquestradorComEventos(OrquestradorFalso):
+            def executar(self, rota, entradas, com_revisao):
+                return Resultado("## Título\n\n```java\nclass A {}\n```", "aprovado", "APROVADO")
+
+        sistema = SistemaTutor(OrquestradorComEventos(), Memoria())
+        console = Console(record=True, force_terminal=True, width=100, file=io.StringIO())
+        entradas = iter(["/1", "/sair"])
+        console.input = lambda *a, **k: next(entradas)
+        terminal.conversar(sistema, console)
+        tela = console.export_text()
+        self.assertIn("Tutor", tela)                      # agente no título do painel
+        self.assertIn("revisado pelo Guardião", tela)     # veredito no rodapé
+        self.assertIn("class A", tela)                    # código renderizado
+        self.assertNotIn("```", tela)                     # Markdown não aparece cru
+
+
+try:
+    import gradio  # noqa: F401
+    TEM_GRADIO = True
+except ModuleNotFoundError:
+    TEM_GRADIO = False
+
+
+@unittest.skipUnless(TEM_GRADIO, "Gradio não instalado (requirements-web.txt)")
+class TestInterfaceWeb(unittest.TestCase):
+    def test_rodape_com_agente_tempo_e_veredito(self):
+        from agente.interface.web import com_rodape
+        from agente.observadores.turno import Turno
+
+        turno = Turno(["Inquiridor", "Guardião"], "aprovado", 95.4)
+        self.assertEqual(com_rodape("Resposta", turno),
+                         "Resposta\n\n<sub>Inquiridor → Guardião · 95 s · revisado pelo Guardião</sub>")
+        self.assertEqual(com_rodape("Ollama fora do ar", Turno()), "Ollama fora do ar")
+
+    def test_mensagem_de_espera_mostra_agente_e_tempo(self):
+        from agente.interface.web import aguardando
+
+        self.assertIn("**Inquiridor → Guardião** trabalhando… 42 s", aguardando(["Inquiridor", "Guardião"], 42.3))
+        self.assertIn("Preparando a resposta", aguardando([], 0))
+
+    def test_tela_monta_sem_erro(self):
+        from agente.interface.web import criar_app
+
+        self.assertIsNotNone(criar_app(lambda modelo: OrquestradorFalso(modelo=modelo)))
 
 
 if __name__ == "__main__":
