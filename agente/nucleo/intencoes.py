@@ -21,6 +21,8 @@ class Intencao(str, Enum):
     RESPOSTA_EXERCICIO = "resposta_exercicio"
     SOLUCAO_PRONTA = "solucao_pronta"
     INVENTADO = "inventado"
+    FORA_ESCOPO = "fora_escopo"     # outro padrão do GoF, sem relação pedida com o Observer
+    CONFIRMACAO = "confirmacao"     # o estudante afirma algo e pede confirmação ("..., né?")
 
 
 class NomeAgente(str, Enum):
@@ -50,7 +52,8 @@ class Rota:
     # Rotas em que o estudante deve escrever o código: salvaguardas.sem_solucao_pronta()
     # remove implementações da resposta final, porque o modelo nem sempre obedece ao prompt.
     bloquear_solucao: bool = False
-    # Dado extraído da mensagem pelo roteador (hoje, o nome de um padrão desconhecido).
+    # Dado extraído da mensagem pelo roteador: o nome do padrão desconhecido (inventado)
+    # ou do outro padrão citado (fora_escopo).
     # O texto da orientação de cada intenção fica em agentes/prompts/rotas.yaml.
     detalhe: str = ""
 

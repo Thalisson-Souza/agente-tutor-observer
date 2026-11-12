@@ -2,19 +2,26 @@
 # (tarefas.yaml) e, portanto, é lida pelo modelo: faz parte do prompt.
 # Qual agente atende cada intenção está em agente/regras/roteador.py (ROTAS).
 #
-# {detalhe} é trocado pelo dado que o roteador extraiu da mensagem (hoje, só o nome
-# de um padrão desconhecido); sem dado, fica "nenhum nome citado".
+# {detalhe} é trocado pelo dado que o roteador extraiu da mensagem: o nome do padrão
+# desconhecido (inventado) ou do outro padrão citado (fora_escopo); sem dado, fica
+# "nenhum nome citado".
 
 conceito:
   orientacao: >
-    Explique o conceito em camadas: analogia, definição, participantes, consequências.
+    Se a mensagem não for sobre o Observer nem sobre orientação a objetos, diga em uma frase
+    que este tutor ensina o padrão Observer e pergunte o que o estudante quer saber sobre ele,
+    sem explicar o conceito e sem dizer que não sabe a resposta. Se o estudante afirmar algo errado sobre o Observer, comece
+    corrigindo em uma ou duas frases e responda só ao que ele perguntou. Nos demais casos,
+    explique o conceito em camadas: analogia, definição, participantes, consequências.
     Se falar de quando usar ou evitar, use só os itens da base.
 
 selecao:
   orientacao: >
     Responda direto, sem reexplicar o conceito nem listar os participantes. Descreva uma
     situação em que o Observer é a melhor escolha e uma em que deve ser evitado, explicando o
-    porquê de cada uma com os critérios da base.
+    porquê de cada uma com os critérios da base. Em cada situação, diga qual objeto seria o
+    Subject (quem muda e avisaria) e quais seriam os dependentes (quem reage). Termine com
+    uma pergunta que aplique o critério a um caso novo, cuja resposta não esteja no texto.
 
 fechamento:
   orientacao: >
@@ -45,8 +52,10 @@ exercicio:
 
 resposta_exercicio:
   orientacao: >
-    O estudante está respondendo ao exercício proposto no histórico. Avalie: o que está certo,
-    o que está errado e por quê, dê uma pista e peça nova tentativa ou proponha o próximo passo.
+    O estudante está respondendo ao exercício proposto no histórico. Separe cada afirmação
+    da resposta e avalie uma por uma: diga se está certa ou errada e por quê, usando a base.
+    Não deixe nenhuma afirmação sem avaliação. Depois dê uma pista para o que estiver errado
+    e peça nova tentativa, sem entregar a resposta completa.
 
 solucao_pronta:
   orientacao: >
@@ -61,3 +70,18 @@ inventado:
   orientacao: >
     pedido para inventar um padrão ou sobre um padrão que não está no catálogo GoF
     (nome citado pelo estudante, {detalhe})
+
+fora_escopo:
+  orientacao: >
+    O estudante perguntou sobre outro padrão ({detalhe}). Diga em uma frase que este tutor
+    ensina só o padrão Observer e não explica outros padrões. Não defina nem descreva o
+    {detalhe}. Se a base de conhecimento registrar uma relação entre o {detalhe} e o
+    Observer, cite só essa relação em uma frase. Termine perguntando o que ele quer saber
+    sobre o Observer. No máximo 80 palavras.
+
+confirmacao:
+  orientacao: >
+    O estudante fez uma afirmação e quer confirmação. Diga na primeira frase se ela está
+    certa ou errada. Explique o porquê em 2 ou 3 frases, só com a base de conhecimento.
+    Não faça a explicação completa do padrão nem liste todos os participantes. Termine
+    com uma pergunta curta que verifique se ele entendeu a correção. No máximo 100 palavras.

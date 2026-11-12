@@ -41,12 +41,21 @@ ROTAS: dict[I, Rota] = {r.intencao: r for r in [
     Rota(I.USO_INCORRETO, A.EXEMPLIFICADOR, T.ESPECIALISTA, ("uso_incorreto",)),
     Rota(I.CONFUSAO, A.INQUIRIDOR, T.ESPECIALISTA, ("confusao", "conceito")),
     Rota(I.EXERCICIO, A.INQUIRIDOR, T.ESPECIALISTA, ("participantes", "selecao"), bloquear_solucao=True),
+    # Sem Guardião desde a iteração 10: no caso E1.2 ele levou ~7 min e a falha real (uma
+    # afirmação do aluno sem avaliação) vinha da orientação, agora mais específica.
     Rota(I.RESPOSTA_EXERCICIO, A.INQUIRIDOR, T.ESPECIALISTA, ("participantes", "consequencias", "uso_incorreto"),
-         revisar=True, bloquear_solucao=True),
+         bloquear_solucao=True),
     # Sem revisão do Guardião: no teste ele manteve a solução completa e dobrou as chamadas ao modelo.
     # Quem garante a regra aqui é bloquear_solucao, aplicado depois do modelo.
     Rota(I.SOLUCAO_PRONTA, A.INQUIRIDOR, T.ESPECIALISTA, ("participantes", "fechamento"), bloquear_solucao=True),
     Rota(I.INVENTADO, A.GUARDIAO, T.RECUSA, ()),
+    # Outro padrão do GoF sem menção ao Observer: o Tutor recusa e, no máximo, cita a relação
+    # que a base registra (seção confusao). Antes caía em "conceito" e o modelo explicava o
+    # outro padrão (caso E2, iteração 9).
+    Rota(I.FORA_ESCOPO, A.TUTOR, T.ESPECIALISTA, ("confusao",)),
+    # Afirmação para confirmar vai ao Inquiridor (diagnóstico de concepções erradas): na rota
+    # conceito o Tutor corrigia e emendava a aula inteira (caso E4, iteração 10).
+    Rota(I.CONFIRMACAO, A.INQUIRIDOR, T.ESPECIALISTA, ("conceito", "participantes", "consequencias", "confusao")),
 ]}
 
 # A primeira regra que casar vence, e a ordem é proposital: os pedidos de risco vêm antes, e
@@ -66,8 +75,32 @@ REGRAS: list[tuple[I, list[str]]] = [
     (I.FECHAMENTO, [r"\blembrar\b", r"\bresum", r"checklist", r"\bfechamento", r"antes de usar"]),
     (I.SELECAO, [r"quando (usar|utilizar|evitar|aplicar|nao usar)", r"melhor escolha", r"\bevitad", r"\bevitar\b",
                  r"\bsituac"]),
+    (I.CONFIRMACAO, [r"\b(ne|certo|correto|nao e|nao eh|confere)\s*\?\s*$", r"^e verdade que\b",
+                      r"^(estou|to|tou) certo\b", r"\bisso esta (certo|correto)\b"]),
     (I.EXEMPLO, [r"\bexemplo", r"\bcodigo\b", r"\bjava\b", r"\bimplement", r"\bmostr"]),
 ]
+
+# Outros padrões do GoF, para a rota fora_escopo. Nome normalizado -> nome para exibir.
+OUTROS_PADROES = {
+    "factory method": "Factory Method", "abstract factory": "Abstract Factory", "builder": "Builder",
+    "prototype": "Prototype", "singleton": "Singleton", "adapter": "Adapter", "bridge": "Bridge",
+    "composite": "Composite", "decorator": "Decorator", "facade": "Facade", "flyweight": "Flyweight",
+    "proxy": "Proxy", "chain of responsibility": "Chain of Responsibility", "command": "Command",
+    "interpreter": "Interpreter", "iterator": "Iterator", "mediator": "Mediator", "memento": "Memento",
+    "state": "State", "strategy": "Strategy", "template method": "Template Method", "visitor": "Visitor",
+}
+
+
+def outro_padrao(texto_normalizado: str) -> str | None:
+    """Nome do outro padrão citado, se a mensagem não mencionar o Observer.
+    "Qual a diferença entre Observer e Mediator?" cita o Observer: é confusao, não fora_escopo."""
+    if re.search(r"\bobserv(er|ador)", texto_normalizado):
+        return None
+    for nome, exibir in OUTROS_PADROES.items():
+        if re.search(rf"\b{nome}\b", texto_normalizado):
+            return exibir
+    return None
+
 
 # Pedidos que valem mesmo no meio de um exercício: o aluno pode tentar obter a resposta pronta.
 PRIORITARIAS = (I.INVENTADO, I.SOLUCAO_PRONTA)
@@ -118,8 +151,9 @@ def classificar(texto: str, exercicio_pendente: bool = False) -> Rota:
     """Escolhe a rota da mensagem.
 
     Com exercício pendente e mensagem que não parece pedido novo, só as intenções
-    PRIORITARIAS são verificadas; o resto é resposta ao exercício. Sem exercício
-    pendente e sem palavra-chave, a mensagem é tratada como pergunta conceitual.
+    PRIORITARIAS são verificadas; o resto é resposta ao exercício. Outro padrão do GoF
+    citado sem o Observer vai para fora_escopo. Sem palavra-chave, a mensagem é tratada
+    como pergunta conceitual (a orientação de conceito cobre fora do tema e afirmação errada).
     """
     nome = padrao_desconhecido(texto)
     if nome:
@@ -127,4 +161,10 @@ def classificar(texto: str, exercicio_pendente: bool = False) -> Rota:
     t = normalizar(texto)
     if exercicio_pendente and not parece_pedido_novo(t):
         return ROTAS[_primeira_regra(t, PRIORITARIAS) or I.RESPOSTA_EXERCICIO]
+    prioritaria = _primeira_regra(t, PRIORITARIAS)
+    if prioritaria:
+        return ROTAS[prioritaria]
+    outro = outro_padrao(t)
+    if outro:
+        return dataclasses.replace(ROTAS[I.FORA_ESCOPO], detalhe=outro)
     return ROTAS[_primeira_regra(t) or I.CONCEITO]
