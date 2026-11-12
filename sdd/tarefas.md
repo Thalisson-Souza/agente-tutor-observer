@@ -9,7 +9,7 @@ Cada tarefa aponta para o requisito ou cenário de [requisitos.md](requisitos.md
 |---|---|---|---|
 | T3 | Tempo: hoje 53–238 s por resposta; testar Vulkan na Iris Xe (T9) para reduzir mais | R3 | |
 | T6 | Testar com a rede desligada (CLI, Rich e `--web`) | R7, R10 | |
-| T14 | Rodar o roteiro e os casos-limite no `qwen2.5:3b` e comparar com o 7b (qualidade × tempo) | R3, D19 | evidência para o relatório e para avisar na demo o que o 3b erra |
+| T14b | Opcional: rodar os casos-limite (E1 a E4) no 3b | D19 | roteiro C1–C7 no 3b já feito (iteração 13) |
 | T7 | Preencher o caderno de evidências na sessão (template pronto no Google Docs) | entregável 6 | |
 | T9 | Opcional: acelerar com Vulkan na Iris Xe | R3 (tempo) | exige configurar o serviço do Ollama com sudo |
 
@@ -40,3 +40,4 @@ Cada tarefa aponta para o requisito ou cenário de [requisitos.md](requisitos.md
 | 11/11 | Template do caderno de evidências no Google Docs (critérios 0–2, 8 cenários, 3 sistemas, síntese) | — |
 | 11/11 | T8: chat de terminal com Rich (D14) | — |
 | 11/11 | T13: interface web com Gradio 6.31.0, opcional (D15) | — |
+| 11/11 | T14: roteiro no qwen2.5:3b avaliado e comparado com o 7b | 13 |

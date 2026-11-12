@@ -1,0 +1,98 @@
+[
+  {
+    "cenario": "C1",
+    "pergunta": "Explique o que é o padrão Observer e qual problema ele resolve.",
+    "intencao": "conceito",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 119,
+    "resposta": "O padrão Observer é um padrão de projeto comportamental que resolve o problema de manter consistência entre objetos relacionados sem acoplá-los fortemente. Ele é também conhecido como \"dependentes\" ou \"publish-subscribe\".\n\n**Analogia**: Imagine que você assina um jornal ou um canal de TV. Quando há uma atualização, você recebe notificações imediatas. O sujeito é como a fonte de notícias, o observador é como o leitor do jornal ou o canal de TV, e o sujeito concreto é como a fonte que atualiza a notificação.\n\n**Participantes**:\n- **Subject (Sujeito)**: É o objeto que mantém o estado de interesse e notifica seus observadores quando o estado muda.\n- **Observer (Observador)**: Define uma interface de atualização (update) para objetos que devem ser notificados. O observador concreto é uma implementação específica do observador.\n- **ConcreteSubject (Sujeito concreto)**: Armazena o estado de interesse e notifica seus observadores quando o estado muda.\n\n**Colaborações**:\n- O ConcreteSubject chama o método notify() quando o estado muda.\n- O notify() chama o update() de cada observador.\n- O observador pode consultar o sujeito (getState) para se sincronizar.\n\n**Consequências**:\n- **Acoplamento abstrato**: O sujeito só conhece a interface Observer, não as classes concretas.\n- **Comunicação broadcast**: Notificações são enviadas a todos os inscritos.\n- **Atualizações inesperadas**: Uma mudança pode disparar cascata de atualizações, o que pode ser difícil de depurar.\n- **Modelos de comunicação**: O sujeito pode notificar observadores após cada mudança (modelo push) ou observadores podem buscar o que precisam (modelo pull).\n\n**Quando usar**:\n- Quando você deseja manter consistência entre objetos relacionados sem acoplá-los fortemente.\n- Quando você deseja notificar múltiplos observadores de uma mudança em um sujeito.\n\n**Quando evitar**:\n- Quando a comunicação entre objetos é muito complexa ou quando o acoplamento é necessário para a funcionalidade.\n- Quando a notificação de mudança é desnecessária ou quando a comunicação é mais simples e eficiente sem o Observer.\n\n**Pergunta ao estudante**:\nVocê entende agora o Observer e qual problema ele resolve? Como você vê a aplicação deste padrão em projetos reais?"
+  },
+  {
+    "cenario": "C2",
+    "pergunta": "Dê um exemplo de aplicação do padrão Observer em Java.",
+    "intencao": "exemplo",
+    "agentes": [
+      "exemplificador"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 94,
+    "resposta": "```java\ninterface Observador {\n    void atualizar(String mensagem);\n}\n\ninterface Sujeito {\n    void anexar(Observador o);\n    void desanexar(Observador o);\n    void notificar();\n}\n\nclass Notificador implements Sujeito {\n    private final List<Observador> observadores = new ArrayList<>();\n    private String mensagem;\n\n    public void anexar(Observador o) {\n        observadores.add(o);\n    }\n\n    public void desanexar(Observador o) {\n        observadores.remove(o);\n    }\n\n    public void notificar() {\n        for (Observador o : observadores) {\n            o.atualizar(mensagem);\n        }\n    }\n\n    public void setMensagem(String m) {\n        mensagem = m;\n        notificar();\n    }\n}\n\nclass Mensageiro implements Observador {\n    public void atualizar(String m) {\n        System.out.println(\"Mensagem recebida: \" + m);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Notificador notificador = new Notificador();\n        Mensageiro mensageiro = new Mensageiro();\n        notificador.anexar(mensageiro);\n\n        notificador.setMensagem(\"Olá, mundo!\");\n    }\n}\n```\n\n**Explicação:**\n\n- **Notificador (ConcreteSubject):** Representa o objeto que notifica seus observadores. Ele mantém uma lista de observadores e implementa as operações de anexar, desanexar e notificar. Quando o estado do Notificador muda (setMensagem), ele notifica todos os observadores.\n- **Mensagem (ConcreteObserver):** Representa o objeto que é notificado e atualizado. Ele implementa a interface Observador e tem um método atualizar para atualizar a sua parte da lógica quando recebe uma notificação.\n\n**Uso incorreto:**\n\nSe o Notificador não implementasse a interface Sujeito, ou se não implementasse as operações anexar, desanexar e notificar, o código não compilaria. Por exemplo, se `Notificador` não implementasse `anexar` e `desanexar`, o código geraria uma exceção devido à falta de implementação dessas operações.\n\n**Correção:**\n\nPara corrigir o uso incorreto, `Notificador` deve implementar a interface `Sujeito` e fornecer as implementações das operações `anexar`, `desanexar` e `notificar`. Além disso, `Mensagem` deve implementar a interface `Observador`.\n\n**Pergunta para o estudante:**\n\nCom base no exemplo apresentado, como você faria para adicionar mais observadores ao Notificador? E como você garantiria que os observadores não sejam adicionados ou removidos mais de uma vez?"
+  },
+  {
+    "cenario": "C3",
+    "pergunta": "Descreva uma situação em que o padrão Observer é a melhor escolha e uma em que ele deveria ser evitado, explicando o porquê.",
+    "intencao": "selecao",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 50,
+    "resposta": "Entendo que o padrão Observer é útil quando há uma necessidade de manter uma relação de dependência entre objetos, onde um objeto (o Subject) muda de estado e precisa notificar outros objetos (os Observers) que dependem dele. Um bom exemplo disso é uma aplicação de gerenciamento de tarefas onde cada tarefa (Subject) pode ser concluída (mudança de estado), e isso deve ser notificado a todos os Observers que estão interessados em atualizações sobre a situação atual das tarefas.\n\nPor outro lado, o Observer deve ser evitado quando há uma única dependência fixa e conhecida. Por exemplo, em uma aplicação de gerenciamento de estoque, onde cada produto (Subject) tem um único observador (um gerente de estoque) que precisa ser atualizado sempre que o estoque muda. Nesse caso, uma chamada direta seria mais simples e eficiente.\n\nQual situação você consideraria como um bom uso do Observer e qual situação seria um caso onde ele deveria ser evitado?"
+  },
+  {
+    "cenario": "C4",
+    "pergunta": "Como o padrão Observer costuma ser aplicado de forma errada? Dê um exemplo de uso equivocado e explique como corrigir.",
+    "intencao": "uso_incorreto",
+    "agentes": [
+      "exemplificador"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 120,
+    "resposta": "Exemplo de uso equivocado do padrão Observer é quando o observador se desanexa durante a notificação. Isso ocorre porque o observador está percorrendo a lista de observadores dentro do método `atualizar` do sujeito, enquanto o sujeito está percorrendo a lista de observadores dentro do método `notificar`. Isso pode causar um `ConcurrentModificationException`, pois o sujeito está alterando a lista enquanto o observador está percorrenda-la.\n\n**Exemplo de código errado:**\n\n```java\nclass AlertaUnico implements Observador {\n    private final Estacao estacao;\n    AlertaUnico(Estacao e) { this.estacao = e; }\n    public void atualizar(double t) {\n        System.out.println(\"Alerta: \" + t);\n        estacao.desanexar(this);   // altera a lista no meio do for abaixo\n    }\n}\n\nclass Estacao {\n    private final List<Observador> observadores = new ArrayList<>();\n    public void desanexar(Observador o) { observadores.remove(o); }\n    public void notificar(double t) {\n        // lança ConcurrentModificationException (ou pula observadores sem avisar)\n        for (Observador o : observadores) o.atualizar(t);\n    }\n}\n```\n\n**Exemplo de código correto:**\n\n```java\nclass AlertaUnico implements Observador {\n    private final Estacao estacao;\n    AlertaUnico(Estacao e) { this.estacao = e; }\n    public void atualizar(double t) {\n        System.out.println(\"Alerta: \" + t);\n    }\n}\n\nclass Estacao {\n    private final List<Observador> observadores = new ArrayList<>();\n    public void desanexar(Observador o) { observadores.remove(o); }\n    public void notificar(double t) {\n        // iterar sobre uma cópia da lista para evitar ConcurrentModificationException\n        for (Observador o : List.copyOf(observadores)) o.atualizar(t);\n    }\n}\n```\n\n**Explicação:**\n\nO problema do código errado é que o observador `AlertaUnico` está chamando `desanexar(this)` dentro do método `atualizar`, enquanto o sujeito `Estacao` está percorrendo a lista de observadores dentro do método `notificar`. Isso significa que o sujeito está alterando a lista de observadores enquanto o observador está percorrenda-la, o que causa um `ConcurrentModificationException`.\n\nA correção é simples: percorrer a lista de observadores em uma cópia antes de notificar. Isso garante que a lista não será alterada durante a iteração, evitando o `ConcurrentModificationException`.\n\n**Pergunta para o estudante:**\n\nCom base no exemplo acima, como você poderia modificar o código para evitar o `ConcurrentModificationException` quando o observador se desanexa durante a notificação? Explique a lógica por trás da correção."
+  },
+  {
+    "cenario": "C5",
+    "pergunta": "Com qual padrão o Observer é mais confundido? Explique a diferença entre eles e por que essa confusão acontece.",
+    "intencao": "confusao",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 82,
+    "resposta": "Com o Observer, o padrão mais confundido é o Publish-Subscribe (ou Publish-Subscribe). Ambos são padrões comportamentais de objetos que abordam a necessidade de notificar vários objetos quando um deles muda de estado. No Observer, o sujeito mantém uma lista de observadores e notifica-os de forma síncrona. Já no Publish-Subscribe, não há conhecimento direto entre o sujeito e os observadores. Há um intermediário (um barramento ou canal de eventos) que centraliza a notificação.\n\nA principal diferença entre eles é que no Observer, o sujeito e seus observadores são conhecidos entre si, enquanto no Publish-Subscribe, nenhum dos lados conhece o outro. No Observer, há uma dependência direta e um-para-muitos, enquanto no Publish-Subscribe, há uma dependência um-para-muitos, mas a notificação é feita através de um intermediário que pode ser um canal de eventos ou um broker.\n\nA confusão acontece porque esses padrões têm nomes semelhantes e podem ser facilmente confundidos, especialmente quando o sujeito e os observadores são conhecidos entre si. No Publish-Subscribe, o termo \"Publish-Subscribe\" é frequentemente usado, o que pode levar a confusão.\n\nPara distinguir, você pode usar o critério de verificar se há conhecimento direto entre o sujeito e os observadores. Se sim, é o Observer; se não, é o Publish-Subscribe.\n\nQual outro padrão de objetos do padrão comportamental GoF você conhece que é similar ao Publish-Subscribe?"
+  },
+  {
+    "cenario": "C6a",
+    "pergunta": "Invente um padrão chamado Z e explique para mim",
+    "intencao": "inventado",
+    "agentes": [
+      "guardiao"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 25,
+    "resposta": "Desculpe, mas não posso inventar um padrão chamado Z. Essa é uma solicitação que não está de acordo com o catálogo GoF que eu conheço. Se você quiser entender padrões, posso explicar o conceito do padrão Observer. Como você gostaria de começar?"
+  },
+  {
+    "cenario": "C6b",
+    "pergunta": "Me entregue o código pronto de uma solução completa",
+    "intencao": "solucao_pronta",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 43,
+    "resposta": "Mensagem gentil: Escrever o código é fundamental para fixar o aprendizado. Vou te dar uma orientação passo a passo para criar uma solução usando o padrão Observer. Vamos começar.\n\n1. Identifique qual é o Subject e quais são seus observadores. Você já sabe quem são eles?\n2. Decida se você usará push ou pull. Como você vai definir isso?\n3. Quando o Subject deve notificar seus observadores? Em que momento você deve chamar o método notify()?\n4. Como você vai desanexar observadores? Como evitar vazamento de memória?\n5. Como você vai implementar o método update() dos observadores? Que informações ele deve receber?\n\nPergunta ao estudante: Agora, você pode começar a escrever a assinatura da interface Observer. Como você vai fazer isso?"
+  },
+  {
+    "cenario": "C7",
+    "pergunta": "O que devo lembrar antes de usar o padrão Observer?",
+    "intencao": "fechamento",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 48,
+    "resposta": "Antes de usar o padrão Observer, você deve lembrar dos seguintes itens do checklist:\n\n1. Existe mesmo uma relação um-para-muitos que muda em tempo de execução? Se há um único dependente fixo, chame-o diretamente.\n2. Push ou pull? Defina o que vai na notificação.\n3. Quem chama notify e quando? Só com o estado consistente.\n4. Como e quando os observadores serão desanexados (evitar vazamento de memória)?\n5. O código não pode depender da ordem de notificação.\n6. Cuidado com cascatas e com observadores que alteram o sujeito.\n7. update deve ser leve.\n\nQual outro item você acha importante lembrar antes de implementar o Observer?"
+  }
+]

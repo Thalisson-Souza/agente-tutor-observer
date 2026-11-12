@@ -131,3 +131,21 @@ Registro cronológico: o que mudou, como foi testado, o resultado. Uma entrada p
 ## 2026-11-11 — Iteração 12: acabamento da web e troca de modelo
 - Layout ajustado para telas largas: barra lateral com largura fixa (~240–280 px), botões alinhados à esquerda, títulos de grupo discretos e rolagem própria; chat na largura restante e na altura da janela (`calc(100vh - 200px)`), mensagens em modo painel; cabeçalho numa linha com o selo "modelo local · sem internet". Parâmetros de abertura do servidor reunidos em `lancar()`.
 - Troca de modelo (D19): seletor na barra lateral (web) e `/modelo 3b|7b` (terminal). Verificado no navegador com orquestrador falso: a primeira resposta saiu com "qwen2.5:7b", a segunda, depois da troca, com "qwen2.5:3b", na mesma conversa. Teste de unidade confirma que a memória passa para o novo modelo.
+
+## 2026-11-11 — Iteração 13: roteiro no qwen2.5:3b (T14)
+- `TUTOR_MODELO=qwen2.5:3b python -m tests.cenarios` (`docs/evidencias/cenarios_2026-11-11_2121_qwen2.5-3b.md`), avaliado com as mesmas notas de 0 a 2 (correção/utilidade) usadas para o 7b.
+
+| Cenário | 7b (iteração 8) | 3b | Erros do 3b |
+|---|---|---|---|
+| C1 | 2/2, 238 s | 1/1, 119 s | Omitiu o ConcreteObserver; definiu push como "notificar após cada mudança"; "quando evitar" fora da base |
+| C2 | 2/2, 216 s | 1/1, 94 s | Nome de classe errado na explicação; inventou seção de uso incorreto, que a orientação proíbe, dizendo que método ausente "geraria exceção" |
+| C3 | 2/2, 147 s | 2/1, 50 s | Pergunta final repete a pergunta, sem caso novo |
+| C4 | 2/2, 196 s | 1/1, 120 s | Código do erro copiado da base, mas diz que "o observador percorre a lista"; a versão corrigida apagou o `desanexar` |
+| C5 | 2/2, 182 s | 1/1, 82 s | Chama o Pub/Sub de padrão GoF; motivo da confusão errado ("nomes semelhantes") |
+| C6a | 2/2, 53 s | 2/2, 25 s | — |
+| C6b | 2/2, 88 s | 2/2, 43 s | Escreveu o rótulo "Mensagem gentil:" |
+| C7 | 2/2, 93 s | 2/2, 48 s | — |
+| Total | 16/16 e 16/16, ~20 min | 12/16 e 11/16, ~10 min | |
+
+- Conclusão: o 3b é ~2x mais rápido e acerta o que é copiar ou recusar (C6a, C6b, C7, código do C4); erra ao explicar com as próprias palavras (C1, C4, C5) e desobedece orientação (C2). O 7b continua o padrão; o rótulo "mais rápido, erra mais" se confirma.
+- Um teste manual do C4 no 3b, feito antes, deu resposta diferente e com outros erros: as respostas variam entre execuções.
