@@ -1,0 +1,108 @@
+[
+  {
+    "cenario": "D1",
+    "pergunta": "o ConcreteSubject",
+    "intencao": "resposta_pergunta",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 110,
+    "resposta": "Segundo a base, o ConcreteSubject armazena o estado de interesse dos ConcreteObservers e envia uma notificação aos observadores quando esse estado muda (p. 276). Você escreveu \"o ConcreteSubject\", mas a base de conhecimento diz que é o ConcreteSubject que armazena o estado de interesse dos ConcreteObservers e envia uma notificação aos observadores quando esse estado muda. Portanto, você acertou em parte. Você mencionou apenas o armazenamento do estado, mas a base completa menciona a notificação aos observadores. \n\nPergunta para você: Como a notificação aos observadores do ConcreteSubject é feita de acordo com a base de conhecimento?",
+    "falhas": [
+      "apareceu /parcial|em parte|errou/"
+    ]
+  },
+  {
+    "cenario": "D2",
+    "pergunta": "o update",
+    "intencao": "resposta_pergunta",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 96,
+    "resposta": "Segundo a base, a operação do Subject chamada para notificar os observadores quando o estado muda é Notify. Você respondeu Update. Errou. Segundo a base, o Update é operação do Observer e é chamada por Notify, uma vez para cada observador. Notify é operação do Subject e é chamada para notificar.",
+    "falhas": []
+  },
+  {
+    "cenario": "D3",
+    "pergunta": "anexar e desanexar",
+    "intencao": "resposta_pergunta",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 79,
+    "resposta": "Segundo a base, as três operações que o Subject oferece aos observadores são Attach, Detach e Notify. Você escreveu \"anexar e desanexar\", que é parte da operação Attach. Errou na operação Detach. Segundo a base, Detach é a operação que remove um observador do Subject. Você também não mencionou a operação Notify, que é crucial para notificar os observadores quando o estado do Subject muda.",
+    "falhas": []
+  },
+  {
+    "cenario": "D4",
+    "pergunta": "sim, eles se comunicam entre si",
+    "intencao": "resposta_pergunta",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 101,
+    "resposta": "Segundo a base, o Observer define uma dependência um-para-muitos: quando o subject muda de estado, todos os observadores são notificados e atualizados. Você escreveu: \"sim, eles se comunicam entre si\". Esta resposta está incompleta. A base diz que os observadores são notificados, mas não que comunicam-se entre si. Você acertou ao dizer que há notificações, mas não explicou a natureza dessas notificações. Você errou ao afirmar que comunicam-se entre si. A base diz que os observadores são notificados individualmente, sem que isso implique que eles comunicam-se entre si. Como orientação, você pode dizer: \"Os observadores são notificados individualmente, mas não comunicam-se entre si.\"",
+    "falhas": []
+  },
+  {
+    "cenario": "D5",
+    "pergunta": "não sei",
+    "intencao": "nao_sei",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 68,
+    "resposta": "Você disse que não sabe responder à pergunta sobre o suporte a comunicação broadcast. Isso é normal. O suporte a comunicação broadcast permite que o subject notifique todos os observadores simultaneamente, sem precisar de um loop para cada observador. Isso é útil para notificações de alta frequência ou quando o número de observadores é grande. Agora, vamos pensar nisso: em um cenário simples, se o subject notifica todos os observadores sobre uma mudança, e cada observador atualiza de acordo com o que recebeu, isso é correto? Pense em um exemplo de como isso poderia funcionar.",
+    "falhas": []
+  },
+  {
+    "cenario": "D6",
+    "pergunta": "sim",
+    "intencao": "exemplo",
+    "agentes": [
+      "exemplificador"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 167,
+    "resposta": "```java\ninterface Observador {\n    void atualizar(String mensagem);\n}\n\ninterface Sujeito {\n    void anexar(Observador o);\n    void desanexar(Observador o);\n    void notificar();\n}\n\nclass CanaisDeNoticias implements Sujeito {\n    private final List<Observador> observadores = new ArrayList<>();\n    private String mensagem;\n\n    public void anexar(Observador o) {\n        observadores.add(o);\n    }\n\n    public void desanexar(Observador o) {\n        observadores.remove(o);\n    }\n\n    public void notificar() {\n        for (Observador o : observadores) {\n            o.atualizar(mensagem);\n        }\n    }\n\n    public void setMensagem(String m) {\n        this.mensagem = m;\n        notificar();\n    }\n}\n\nclass Noticia implements Observador {\n    public void atualizar(String mensagem) {\n        System.out.println(\"Notícia: \" + mensagem);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        CanaisDeNoticias canais = new CanaisDeNoticias();\n        Noticia noticia1 = new Noticia();\n        Noticia noticia2 = new Noticia();\n\n        canais.anexar(noticia1);\n        canais.anexar(noticia2);\n\n        canais.setMensagem(\"Boa notícia! O Brasil venceu a Copa do Mundo!\");\n    }\n}\n```\n\nNeste exemplo, temos um `CanaisDeNoticias` que é o `ConcreteSubject`, responsável por armazenar os observadores e notificar todos quando há uma mudança de estado (em nosso caso, quando a mensagem é alterada). O `Noticia` é um `ConcreteObserver` que implementa a `Observador` interface e atualiza quando a mensagem é notificada.\n\nO `CanaisDeNoticias` tem métodos para anexar e desanexar observadores (`anexar` e `desanexar`), e um método para notificar (`notificar`). Quando um observador é anexado, ele é adicionado à lista de observadores. Quando a mensagem é alterada, `notificar` percorre a lista de observadores e notifica cada um deles.\n\nO `Noticia` implementa a `Observador` interface e possui o método `atualizar` que é chamado quando um observador é notificado. Neste exemplo, a mensagem é impressa na tela.\n\nEsta é uma implementação simples do padrão Observer. O `CanaisDeNoticias` é o `Subject` que mantém uma lista de `ConcreteObserver` (Noticia) e notifica todos quando há uma mudança de estado. O `Noticia` é um `ConcreteObserver` que implementa a `Observador` interface e atualiza quando notificado.\n\n**Pergunta para o estudante:**\nCom base neste exemplo, você poderia explicar como o padrão Observer funciona e qual papel é de cada classe? Como você acha que isso poderia ser aplicado em outro contexto?",
+    "falhas": []
+  },
+  {
+    "cenario": "D7",
+    "pergunta": "Dê um exemplo em Java do Observer.",
+    "intencao": "exemplo",
+    "agentes": [
+      "exemplificador"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 89,
+    "resposta": "```java\ninterface Observador {\n    void atualizar(double temperatura);\n}\n\ninterface Sujeito {\n    void anexar(Observador o);\n    void desanexar(Observador o);\n    void notificar();\n}\n\nclass CanaisDeNoticias implements Sujeito {\n    private final List<Observador> observadores = new ArrayList<>();\n    private String noticia;\n\n    public void anexar(Observador o) {\n        observadores.add(o);\n    }\n\n    public void desanexar(Observador o) {\n        observadores.remove(o);\n    }\n\n    public void notificar() {\n        for (Observador o : observadores) {\n            o.atualizar(noticia);\n        }\n    }\n\n    public void setNoticia(String n) {\n        this.noticia = n;\n        notificar();\n    }\n}\n\nclass Jornalista implements Observador {\n    public void atualizar(String n) {\n        System.out.println(\"Jornalista: A notícia agora é: \" + n);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        CanaisDeNoticias canais = new CanaisDeNoticias();\n        Jornalista jornalista = new Jornalista();\n        canais.anexar(jornalista);\n\n        canais.setNoticia(\"O Brasil venceu a Copa América!\");\n    }\n}\n```\n\n**Explicação:**\n- **Sujeito (CanaisDeNoticias):** Armazena uma lista de observadores e notifica todos quando há uma mudança no estado (noticia). Ele também tem métodos para anexar e desanexar observadores.\n- **Observer (Jornalista):** Implementa a interface Observador e tem um método atualizar que é chamado quando o sujeito notifica. Ele recebe uma notificação que atualiza sua representação da noticia.\n- **CanaisDeNoticias:** É o sujeito concreto que mantém a noticia e notifica os observadores quando a noticia muda.\n\n**Pergunta para o estudante:**\nCom base no exemplo acima, como você explicaria a diferença entre o sujeito e o observador? Como o sujeito notifica os observadores e o observador como ele se atualiza?",
+    "falhas": []
+  },
+  {
+    "cenario": "D8",
+    "pergunta": "me dá o código pronto",
+    "intencao": "solucao_pronta",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 60,
+    "resposta": "Entendo que você não gostaria de fornecer a solução pronta. Vou orientá-lo passo a passo para criar o código do Observer. Vamos começar com a definição da interface Observer.\n\n1. Quem é o Subject? (O Subject é a classe que mantém o estado e notifica os observadores quando necessário.)\n2. Quem são os observadores? (Os observadores são classes que implementam a interface Observer e são notificadas quando o Subject muda de estado.)\n3. Push ou pull? (O Observer deve ser notificado quando o Subject muda de estado, então é um push.)\n4. Em que momento o Subject deve notificar? (O Subject deve notificar os observadores sempre que o estado muda e precisa ser atualizado.)\n5. Como e quando os observadores serão desanexados? (Os observadores devem ser desanexados quando não precisam mais de notificações, por exemplo, quando são removidos da lista de observadores do Subject.)\n\nVamos começar com a definição da interface Observer:\n\n```java\npublic interface Observer {\n    void update(ConcreteSubject subject);\n}\n```\n\nVamos continuar com a próxima etapa quando você estiver pronto. Você pode mostrar a assinatura da interface Observer e eu poderei ajudá-lo com a próxima etapa.",
+    "falhas": []
+  }
+]

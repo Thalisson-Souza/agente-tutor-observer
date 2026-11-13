@@ -1,0 +1,108 @@
+[
+  {
+    "cenario": "D1",
+    "pergunta": "o ConcreteSubject",
+    "intencao": "resposta_pergunta",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 140,
+    "resposta": "Segundo a base, o participante que armazena o estado de interesse e notifica os observadores quando ele muda é o ConcreteSubject.\n\nVocê respondeu corretamente. O ConcreteSubject é responsável por manter o estado de interesse dos observadores e notificá-los quando esse estado muda.\n\nQual é a diferença principal entre o Observer e o Publish-Subscribe padrão?",
+    "falhas": []
+  },
+  {
+    "cenario": "D2",
+    "pergunta": "o update",
+    "intencao": "resposta_pergunta",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 94,
+    "resposta": "Segundo a base, a operação do Subject que notifica os observadores é o `Notify`. Você respondeu \"Update\", que é a operação do Observer, não do Subject.\n\nO `Notify` é chamado pelo Subject quando o estado dele muda, e essa operação percorre a lista de observadores, chamando `Update` em cada um deles.\n\nQual outra operação do Subject é usada para adicionar ou remover observadores?",
+    "falhas": [
+      "faltou /err|incorret|n[ãa]o (está|esta) cert/"
+    ]
+  },
+  {
+    "cenario": "D3",
+    "pergunta": "anexar e desanexar",
+    "intencao": "resposta_pergunta",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 98,
+    "resposta": "Segundo a base, o Subject oferece três operações aos observadores: Attach, Detach e Notify.\n\nVocê mencionou apenas \"anexar e desanexar\", que correspondem a Attach e Detach. O que falta ainda é a operação Notify, que é chamada pelo Subject quando há uma mudança no seu estado.\n\nVocê acertou em parte, pois identificou duas das três operações corretamente. Agora, pense no que a operação Notify faz.\n\nQual é a função da operação Notify no padrão Observer?",
+    "falhas": []
+  },
+  {
+    "cenario": "D4",
+    "pergunta": "sim, eles se comunicam entre si",
+    "intencao": "resposta_pergunta",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 100,
+    "resposta": "Segundo a base, no Observer, um observador não conhece os outros observadores. O subject é responsável por notificar todos os observadores quando houver uma mudança no estado. Seu conhecimento se limita à interface Observer e à comunicação via o subject.\n\nVocê disse que eles se comunicam entre si, mas isso não está correto. Eles não se comunicam diretamente; o subject é quem faz a comunicação. Você pode tentar pensar em outro aspecto do Observer?\n\nQual é a principal responsabilidade do subject no padrão Observer?",
+    "falhas": []
+  },
+  {
+    "cenario": "D5",
+    "pergunta": "não sei",
+    "intencao": "nao_sei",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 78,
+    "resposta": "Você está correto em não saber. No modelo push, é o subject quem decide quais dados vão na notificação. O subject é quem muda de estado e quem chama o método Notify para notificar os observadores, passando os dados necessários.\n\nQual desses objetos é responsável por conhecer os observadores e fornecer a interface para adicionar ou remover observadores?",
+    "falhas": []
+  },
+  {
+    "cenario": "D6",
+    "pergunta": "sim",
+    "intencao": "exemplo",
+    "agentes": [
+      "exemplificador"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 225,
+    "resposta": "```java\ninterface Observador {\n    void atualizar(int novoValor);\n}\n\ninterface Sujeito {\n    void anexar(Observador o);\n    void desanexar(Observador o);\n    void notificar();\n}\n\nclass Notificador implements Sujeito { // ConcreteSubject\n    private final List<Observador> observadores = new ArrayList<>();\n    private int valor;\n\n    public void anexar(Observador o) { observadores.add(o); }\n    public void desanexar(Observador o) { observadores.remove(o); }\n    public void notificar() {\n        for (Observador o : List.copyOf(observadores)) o.atualizar(valor);\n    }\n    public void setValue(int novoValor) { this.valor = novoValor; notificar(); }\n}\n\nclass Monitor implements Observador { // ConcreteObserver\n    public void atualizar(int novoValor) {\n        System.out.println(\"Novo valor: \" + novoValor);\n    }\n}\n```\n\n### Explicação\n\n1. **Subject (Notificador)**: Esta é a classe que mantém uma lista de observadores e notifica-os quando o valor muda. A interface `Sujeito` define os métodos `anexar`, `desanexar` e `notificar`. A classe `Notificador` implementa `Sujeito` e armazena uma lista de observadores, notificando-os sempre que o valor é alterado.\n\n2. **ConcreteSubject (Notificador)**: A classe `Notificador` é um sujeito concreto que mantém um valor e notifica todos os observadores quando esse valor muda. O método `setValue` é usado para alterar o valor e, em seguida, notificar os observadores.\n\n3. **Observer (Monitor)**: A interface `Observador` define a operação `atualizar`, que é chamada pelos observadores quando o sujeito notifica. A classe `Monitor` implementa `Observador` e imprime o novo valor sempre que é notificado.\n\n4. **ConcreteObserver (Monitor)**: A classe `Monitor` é um observador concreto que mantém a lógica de atualização. Quando notificado, ele imprime o novo valor.\n\n### Pergunta ao Estudante\nQual método do `ConcreteSubject` (`Notificador`) é chamado sempre que o valor é alterado e como ele notifica os observadores?",
+    "falhas": []
+  },
+  {
+    "cenario": "D7",
+    "pergunta": "Dê um exemplo em Java do Observer.",
+    "intencao": "exemplo",
+    "agentes": [
+      "exemplificador"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 169,
+    "resposta": "```java\ninterface Observador {\n    void atualizar(String mensagem);\n}\n\ninterface Sujeito {\n    void anexar(Observador o);\n    void desanexar(Observador o);\n    void notificar();\n}\n\nclass Notificador implements Sujeito { // ConcreteSubject\n    private final List<Observador> observadores = new ArrayList<>();\n    private String mensagem;\n    public void anexar(Observador o) { observadores.add(o); }\n    public void desanexar(Observador o) { observadores.remove(o); }\n    public void notificar() {\n        for (Observador o : List.copyOf(observadores)) o.atualizar(mensagem);\n    }\n    public void setMensagem(String m) { this.mensagem = m; notificar(); }\n}\n\nclass Monitor implements Observador { // ConcreteObserver\n    public void atualizar(String m) {\n        System.out.println(\"Monitor recebeu: \" + m);\n    }\n}\n```\n\n### Explicação\n\n1. **Interface `Observador`**: Define a operação `atualizar` que será chamada quando o `Sujeito` notificar seus observadores.\n2. **Interface `Sujeito`**: Define as operações `anexar`, `desanexar` e `notificar`. Essa interface é implementada pelo `ConcreteSubject`.\n3. **Classe `Notificador`**: Implementa a interface `Sujeito` e mantém uma lista de observadores. Quando o estado (neste caso, a mensagem) muda, ele notifica todos os observadores.\n4. **Classe `Monitor`**: Implementa a interface `Observador` e define a lógica de atualização. Quando notificado, ele imprime a mensagem recebida.\n\n### Questão ao Estudante\nQual método do `ConcreteSubject` é responsável por notificar os observadores, e por que é importante usar `List.copyOf` ao percorrer a lista de observadores?",
+    "falhas": []
+  },
+  {
+    "cenario": "D8",
+    "pergunta": "me dá o código pronto",
+    "intencao": "solucao_pronta",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 95,
+    "resposta": "Claro, entendo seu desejo, mas escrever o código é o que fixa o aprendizado. Vamos guiar você passo a passo:\n\n1. Quem é o Subject? O que ele faz e quando ele muda de estado?\n2. Quem são os Observadores? O que eles fazem quando são notificados?\n3. Push ou pull? Defina o que vai na notificação.\n4. Em que momento o Subject deve notificar os Observadores?\n5. Como desanexar os Observadores do Subject?\n\nAqui está a assinatura da interface Observer:\n\n```java\npublic interface Observer {\n    void update(String estado);\n}\n```\n\nTente responder a essas perguntas e mostre sua primeira tentativa!",
+    "falhas": []
+  }
+]

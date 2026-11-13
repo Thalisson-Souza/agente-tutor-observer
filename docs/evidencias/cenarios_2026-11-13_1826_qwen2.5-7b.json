@@ -1,0 +1,41 @@
+[
+  {
+    "cenario": "D6",
+    "pergunta": "sim",
+    "intencao": "exemplo",
+    "agentes": [
+      "exemplificador"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 114,
+    "resposta": "```java\ninterface Observador {\n    void atualizar(String mensagem);\n}\n\ninterface Sujeito {\n    void anexar(Observador o);\n    void desanexar(Observador o);\n    void notificar();\n}\n\nclass Notificador implements Sujeito { // ConcreteSubject\n    private final List<Observador> observadores = new ArrayList<>();\n    private String mensagem;\n    public void anexar(Observador o) { observadores.add(o); }\n    public void desanexar(Observador o) { observadores.remove(o); }\n    public void notificar() {\n        for (Observador o : List.copyOf(observadores)) o.atualizar(mensagem);\n    }\n    public void setMensagem(String m) { this.mensagem = m; notificar(); }\n}\n\nclass Email implements Observador { // ConcreteObserver\n    public void atualizar(String m) {\n        System.out.println(\"Email enviado: \" + m);\n    }\n}\n\nclass SMS implements Observador { // ConcreteObserver\n    public void atualizar(String m) {\n        System.out.println(\"SMS enviado: \" + m);\n    }\n}\n```\n\n### Explicação\n1. **Interfaces e Papéis**: `Observador` é a interface que define a operação de atualização (`atualizar`). `Sujeito` é a interface que define as operações de adicionar, remover e notificar observadores.\n2. **ConcreteSubject**: `Notificador` implementa `Sujeito` e mantém uma lista de observadores. Ele notifica todos os observadores sempre que a mensagem (`mensagem`) é alterada.\n3. **ConcreteObservers**: `Email` e `SMS` implementam `Observador` e fornecem implementações para `atualizar`, que imprimem mensagens indicando que um e-mail ou SMS foi enviado.\n\n### Questão ao Estudante\nQual seria a vantagem de usar `List.copyOf(observadores)` em vez de `observadores` diretamente na chamada de `notificar()`?",
+    "falhas": []
+  },
+  {
+    "cenario": "D7",
+    "pergunta": "Dê um exemplo em Java do Observer.",
+    "intencao": "exemplo",
+    "agentes": [
+      "exemplificador"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 113,
+    "resposta": "```java\ninterface Observador {\n    void atualizar(String mensagem);\n}\n\ninterface Sujeito {\n    void anexar(Observador o);\n    void desanexar(Observador o);\n    void notificar();\n}\n\nclass Notificador implements Sujeito { // ConcreteSubject\n    private final List<Observador> observadores = new ArrayList<>();\n    private String mensagem;\n    public void anexar(Observador o) { observadores.add(o); }\n    public void desanexar(Observador o) { observadores.remove(o); }\n    public void notificar() {\n        for (Observador o : List.copyOf(observadores)) o.atualizar(mensagem);\n    }\n    public void setMensagem(String m) { this.mensagem = m; notificar(); }\n}\n\nclass Email implements Observador { // ConcreteObserver\n    public void atualizar(String m) {\n        System.out.println(\"Email enviado: \" + m);\n    }\n}\n\nclass SMS implements Observador { // ConcreteObserver\n    public void atualizar(String m) {\n        System.out.println(\"SMS enviado: \" + m);\n    }\n}\n```\n\n### Explicação\n\n1. **Interfaces**: `Observador` e `Sujeito` são as interfaces que definem o comportamento dos observadores e do sujeito, respectivamente.\n2. **ConcreteSubject**: `Notificador` implementa a interface `Sujeito` e armazena uma lista de observadores. Ele notifica os observadores sempre que a mensagem muda.\n3. **ConcreteObservers**: `Email` e `SMS` implementam a interface `Observador` e definem como eles devem ser atualizados. Cada um imprime uma mensagem indicando que um novo tipo de notificação foi enviada.\n\n### Questão ao Estudante\n\nQual seria a vantagem de usar o padrão Observer neste cenário de notificações?",
+    "falhas": []
+  },
+  {
+    "cenario": "C2",
+    "pergunta": "Dê um exemplo de aplicação do padrão Observer em Java.",
+    "intencao": "exemplo",
+    "agentes": [
+      "exemplificador"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 186,
+    "resposta": "```java\ninterface Observador {\n    void atualizar(String notificacao);\n}\n\ninterface Sujeito {\n    void anexar(Observador o);\n    void desanexar(Observador o);\n    void notificar();\n}\n\nclass Notificacao implements Sujeito {\n    private final List<Observador> observadores = new ArrayList<>();\n    private String mensagem;\n\n    public void anexar(Observador o) { observadores.add(o); }\n    public void desanexar(Observador o) { observadores.remove(o); }\n    public void notificar() {\n        for (Observador o : List.copyOf(observadores)) o.atualizar(mensagem);\n    }\n\n    public void setMensagem(String m) {\n        this.mensagem = m;\n        notificar();\n    }\n}\n\nclass Email implements Observador {\n    public void atualizar(String notificacao) {\n        System.out.println(\"Email enviado: \" + notificacao);\n    }\n}\n\nclass SMS implements Observador {\n    public void atualizar(String notificacao) {\n        System.out.println(\"SMS enviado: \" + notificacao);\n    }\n}\n```\n\n### Explicação\n1. **Interface `Observador`**: Define a operação `atualizar`, que será chamada quando o `Sujeito` notificar os observadores.\n2. **Interface `Sujeito`**: Define os métodos `anexar`, `desanexar` e `notificar`, que são responsáveis por gerenciar os observadores e notificá-los.\n3. **Classe `Notificacao`**: Implementa a interface `Sujeito` e armazena uma lista de observadores. O método `notificar` percorre a lista de observadores e chama `atualizar` em cada um.\n4. **Classe `Email`**: Implementa a interface `Observador` e define a ação a ser realizada quando notificado.\n5. **Classe `SMS`**: Também implementa a interface `Observador` e define a ação a ser realizada quando notificado.\n\n### Questão ao Estudante\nQual método do `Sujeito` é chamado quando uma nova notificação é definida, e por que ele é importante para o padrão Observer?",
+    "falhas": []
+  }
+]
