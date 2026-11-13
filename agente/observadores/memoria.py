@@ -10,6 +10,24 @@ from ..nucleo.eventos import Evento, ObservadorConversa, TipoEvento
 from ..nucleo.intencoes import Intencao
 
 BLOCO_DE_CODIGO = re.compile(r"```.*?(```|$)", re.DOTALL)
+# Fim de frase seguido de espaço: separa a última frase da última linha.
+FIM_DE_FRASE = re.compile(r"(?<=[.!:])\s+")
+
+
+def pergunta_final(resposta: str) -> str:
+    """A pergunta com que o tutor terminou a resposta, ou "" se não terminou com pergunta.
+
+    Os prompts pedem que toda resposta termine com uma pergunta ao estudante. Ela é guardada
+    à parte porque o histórico corta respostas longas e a pergunta, no fim, era a primeira
+    coisa a sumir: o modelo recebia a resposta do aluno sem saber o que tinha perguntado.
+    """
+    linhas = [l.strip() for l in resposta.strip().splitlines() if l.strip()]
+    if not linhas:
+        return ""
+    ultima = linhas[-1].strip("*_ ")
+    if not ultima.endswith("?"):
+        return ""
+    return FIM_DE_FRASE.split(ultima)[-1]
 
 
 class Memoria(ObservadorConversa):
@@ -36,12 +54,19 @@ class Memoria(ObservadorConversa):
     def exercicio_pendente(self) -> bool:
         return 0 <= self.tentativas < self.max_tentativas
 
+    @property
+    def ultima_pergunta(self) -> str:
+        """Pergunta com que o tutor terminou o último turno ("" se não houve): a próxima
+        mensagem que não parecer pedido novo é a resposta a ela (ver roteador.classificar)."""
+        return self.turnos[-1].get("pergunta_tutor", "") if self.turnos else ""
+
     def atualizar(self, evento: Evento) -> None:
         if evento.tipo is not TipoEvento.TURNO_CONCLUIDO:
             return
         d = evento.dados
         intencao = Intencao(d["intencao"])
-        self.turnos.append({"estudante": d["pergunta"], "tutor": d["resposta"], "intencao": intencao.value})
+        self.turnos.append({"estudante": d["pergunta"], "tutor": d["resposta"], "intencao": intencao.value,
+                            "pergunta_tutor": pergunta_final(d["resposta"])})
         self.turnos = self.turnos[-20:]  # limita o arquivo de sessão; o prompt usa só max_turnos
         if intencao is Intencao.EXERCICIO:
             self.tentativas = 0
@@ -65,6 +90,11 @@ class Memoria(ObservadorConversa):
             resposta = BLOCO_DE_CODIGO.sub("[código omitido]", t["tutor"])
             if len(resposta) > limite_resposta:
                 resposta = resposta[:limite_resposta] + " [...]"
+                # A pergunta final é o que liga este turno ao próximo: não pode sumir no corte.
+                if t.get("pergunta_tutor"):
+                    # Frase, não rótulo: com "Pergunta final do tutor:" o 3b copiou o rótulo
+                    # na resposta (teste D3).
+                    resposta += f"\n(O tutor terminou perguntando: {t['pergunta_tutor']})"
             linhas.append(f"Estudante: {t['estudante']}\nTutor: {resposta}")
         if self.vistos:
             linhas.append("Temas já trabalhados: " + ", ".join(self.vistos))

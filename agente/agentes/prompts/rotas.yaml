@@ -30,10 +30,15 @@ fechamento:
 
 exemplo:
   orientacao: >
-    Mostre um exemplo em Java e indique o papel de cada classe (Subject, Observer,
-    ConcreteSubject, ConcreteObserver). Use domínio diferente do que já apareceu no histórico.
-    Explique só o exemplo correto: não acrescente seção de uso incorreto nem regras que não
-    estejam na base.
+    Mostre um exemplo em Java. Logo depois do código, escreva os papéis do padrão, uma linha
+    para cada, exatamente neste formato:
+    - **Subject**: a interface do sujeito (ex.: `Sujeito`)
+    - **Observer**: a interface do observador (ex.: `Observador`)
+    - **ConcreteSubject**: a classe que implementa o Subject
+    - **ConcreteObserver**: as classes que implementam o Observer
+    Depois explique em 2 ou 3 tópicos por que o exemplo funciona. Use domínio diferente do
+    que já apareceu no histórico. Explique só o exemplo correto: não acrescente seção de uso
+    incorreto nem regras que não estejam na base.
 
 uso_incorreto:
   orientacao: >
@@ -85,3 +90,23 @@ confirmacao:
     certa ou errada. Explique o porquê em 2 ou 3 frases, só com a base de conhecimento.
     Não faça a explicação completa do padrão nem liste todos os participantes. Termine
     com uma pergunta curta que verifique se ele entendeu a correção. No máximo 100 palavras.
+
+resposta_pergunta:
+  orientacao: >
+    O estudante está respondendo à última pergunta do tutor no histórico. Fale diretamente com
+    ele, usando "você". Se ele aceitou um convite, faça brevemente o que foi oferecido. Se
+    respondeu à pergunta, siga esta ordem: (1) comece com "Segundo a base," e escreva a
+    resposta certa da pergunta, tirada da BASE DE CONHECIMENTO; (2) compare com o que ele
+    escreveu; (3) só então diga se acertou, acertou em parte ou errou, e por quê. "Em parte" só
+    vale quando ele disse uma parte do que a base diz; se respondeu outra coisa, errou. Não
+    diga que está certo antes de fazer a comparação. Não repita a explicação completa do padrão.
+    Termine com UMA pergunta curta sobre outro ponto, nunca a mesma pergunta de novo. No máximo
+    120 palavras.
+
+nao_sei:
+  orientacao: >
+    O estudante disse que não sabe responder à última pergunta do tutor no histórico. Fale
+    diretamente com ele, usando "você", sem veredito e sem dizer que ele acertou ou errou.
+    Diga que tudo bem não saber, explique a resposta em 2 ou 3 frases simples, só com a base,
+    e termine com UMA pergunta mais fácil sobre o mesmo ponto, diferente da anterior, para ele
+    verificar que entendeu. No máximo 100 palavras.

@@ -38,7 +38,7 @@ ROTAS: dict[I, Rota] = {r.intencao: r for r in [
     # Exemplo e uso incorreto sem Guardião: em 11/11 ele aprovou um exemplo de erro falso no C4
     # e somava ~3 min. A correção veio de ancorar o código na base (seção uso_incorreto).
     Rota(I.EXEMPLO, A.EXEMPLIFICADOR, T.ESPECIALISTA, ("participantes", "exemplo")),
-    Rota(I.USO_INCORRETO, A.EXEMPLIFICADOR, T.ESPECIALISTA, ("uso_incorreto",)),
+    Rota(I.USO_INCORRETO, A.EXEMPLIFICADOR, T.ESPECIALISTA, ("uso_incorreto", "implementacao")),
     Rota(I.CONFUSAO, A.INQUIRIDOR, T.ESPECIALISTA, ("confusao", "conceito")),
     Rota(I.EXERCICIO, A.INQUIRIDOR, T.ESPECIALISTA, ("participantes", "selecao"), bloquear_solucao=True),
     # Sem Guardião desde a iteração 10: no caso E1.2 ele levou ~7 min e a falha real (uma
@@ -56,6 +56,13 @@ ROTAS: dict[I, Rota] = {r.intencao: r for r in [
     # Afirmação para confirmar vai ao Inquiridor (diagnóstico de concepções erradas): na rota
     # conceito o Tutor corrigia e emendava a aula inteira (caso E4, iteração 10).
     Rota(I.CONFIRMACAO, A.INQUIRIDOR, T.ESPECIALISTA, ("conceito", "participantes", "consequencias", "confusao")),
+    # Resposta do aluno à pergunta do fim do turno anterior. Antes caía em "conceito" (ou em
+    # "exemplo", se tivesse a palavra): o Tutor dizia que só ensina o Observer ou reexplicava
+    # o padrão, ignorando a resposta. O Inquiridor é quem avalia respostas do estudante.
+    Rota(I.RESPOSTA_PERGUNTA, A.INQUIRIDOR, T.ESPECIALISTA, ("participantes", "consequencias")),
+    # "não sei" não tem o que avaliar: nos testes D5 os dois modelos inventaram um acerto
+    # ou pediram de novo a mesma resposta. Rota própria, sem veredito.
+    Rota(I.NAO_SEI, A.INQUIRIDOR, T.ESPECIALISTA, ("participantes", "consequencias")),
 ]}
 
 # A primeira regra que casar vence, e a ordem é proposital: os pedidos de risco vêm antes, e
@@ -105,11 +112,21 @@ def outro_padrao(texto_normalizado: str) -> str | None:
 # Pedidos que valem mesmo no meio de um exercício: o aluno pode tentar obter a resposta pronta.
 PRIORITARIAS = (I.INVENTADO, I.SOLUCAO_PRONTA)
 
+# Respostas curtas à pergunta do tutor que não são para avaliar (texto normalizado).
+# ACEITE: "sim" a um convite; a mensagem é roteada pela pergunta do tutor, então "Quer ver um
+# exemplo em Java?" + "sim" vai ao Exemplificador (no teste D6 o Inquiridor avaliou o "sim").
+ACEITE = re.compile(r"^(sim|s|quero|pode ser|pode|claro|bora|vamos|ok|beleza|com certeza|manda)"
+                    r"[\s!.,]*(por favor|pf|pfv)?[\s!.]*$")
+NAO_SEI = re.compile(r"^(nao sei|n sei|nao faco ideia|sei la|nao lembro|nao tenho certeza|nao entendi)\b")
+# Rotas que um convite do tutor pode oferecer ("Quer tentar um exercício?").
+OFERTAS = (I.EXEMPLO, I.EXERCICIO, I.USO_INCORRETO, I.SELECAO, I.CONFUSAO, I.FECHAMENTO)
+
 # Início típico de um pedido novo. Com exercício pendente, uma mensagem que não começa assim
 # (nem termina em "?") é lida como resposta, mesmo contendo "código" ou "diferença".
 INICIO_DE_PEDIDO = re.compile(
     r"^(o que|como|por ?que|qual|quais|quando|onde|explique|me explique|mostre|me mostre|de um|"
-    r"quero|gostaria|pode|poderia|agora|outro|outra|proximo|proxima)\b")
+    r"quero|gostaria|pode|poderia|agora|outro|outra|proximo|proxima|explica|mostra|me de|me da|da um|"
+    r"descreva|diga|liste|cite|compare|defina|fale|ensine|escreva|resuma|com qual|em que)\b")
 
 
 def normalizar(texto: str) -> str:
@@ -147,11 +164,13 @@ def _primeira_regra(t: str, intencoes: tuple[I, ...] | None = None) -> I | None:
     return None
 
 
-def classificar(texto: str, exercicio_pendente: bool = False) -> Rota:
+def classificar(texto: str, exercicio_pendente: bool = False, pergunta_tutor: str = "") -> Rota:
     """Escolhe a rota da mensagem.
 
     Com exercício pendente e mensagem que não parece pedido novo, só as intenções
-    PRIORITARIAS são verificadas; o resto é resposta ao exercício. Outro padrão do GoF
+    PRIORITARIAS são verificadas; o resto é resposta ao exercício. O mesmo vale quando o
+    tutor terminou o turno anterior com uma pergunta (`pergunta_tutor`): o resto é resposta a
+    essa pergunta, exceto aceite de convite (roteado pela pergunta) e "não sei". Outro padrão do GoF
     citado sem o Observer vai para fora_escopo. Sem palavra-chave, a mensagem é tratada
     como pergunta conceitual (a orientação de conceito cobre fora do tema e afirmação errada).
     """
@@ -161,6 +180,17 @@ def classificar(texto: str, exercicio_pendente: bool = False) -> Rota:
     t = normalizar(texto)
     if exercicio_pendente and not parece_pedido_novo(t):
         return ROTAS[_primeira_regra(t, PRIORITARIAS) or I.RESPOSTA_EXERCICIO]
+    # Aqui um "?" no meio também indica pedido novo ("Com qual padrão...? Explique..."): quem
+    # responde à pergunta do tutor raramente pergunta de volta, e errar para o lado do pedido
+    # novo só repete o comportamento antigo.
+    if pergunta_tutor and "?" not in t:
+        if ACEITE.match(t):
+            oferta = _primeira_regra(normalizar(pergunta_tutor))
+            return ROTAS[oferta if oferta in OFERTAS else I.RESPOSTA_PERGUNTA]
+        if NAO_SEI.match(t):
+            return ROTAS[I.NAO_SEI]
+        if not parece_pedido_novo(t):
+            return ROTAS[_primeira_regra(t, PRIORITARIAS) or I.RESPOSTA_PERGUNTA]
     prioritaria = _primeira_regra(t, PRIORITARIAS)
     if prioritaria:
         return ROTAS[prioritaria]

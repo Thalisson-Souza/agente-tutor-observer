@@ -60,7 +60,7 @@ class SistemaTutor:
         if problema:
             return problema
 
-        rota = classificar(pergunta, self.memoria.exercicio_pendente)
+        rota = classificar(pergunta, self.memoria.exercicio_pendente, self.memoria.ultima_pergunta)
         com_revisao = rota.com_revisao(config.USAR_GUARDIAO, config.REVISAR_TUDO)
         intencao = rota.intencao.value
         self.conversa.notificar(TipoEvento.PERGUNTA_RECEBIDA, pergunta=pergunta, intencao=intencao)

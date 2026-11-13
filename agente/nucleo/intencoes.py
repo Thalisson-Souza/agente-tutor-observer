@@ -23,6 +23,8 @@ class Intencao(str, Enum):
     INVENTADO = "inventado"
     FORA_ESCOPO = "fora_escopo"     # outro padrão do GoF, sem relação pedida com o Observer
     CONFIRMACAO = "confirmacao"     # o estudante afirma algo e pede confirmação ("..., né?")
+    RESPOSTA_PERGUNTA = "resposta_pergunta"  # resposta à pergunta que o tutor fez no fim do turno
+    NAO_SEI = "nao_sei"             # "não sei" como resposta à pergunta do tutor
 
 
 class NomeAgente(str, Enum):

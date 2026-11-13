@@ -13,6 +13,8 @@ from agente.nucleo.erros import ErroDeConfiguracao, FalhaModelo
 from agente.nucleo.eventos import Conversa, ObservadorConversa, TipoEvento
 from agente.nucleo.intencoes import Intencao, NomeAgente, Resultado
 from agente.observadores import Memoria
+from agente.observadores.memoria import pergunta_final
+from agente.interface.roteiro import PERGUNTAS
 from agente.agentes.orquestrador import interpretar_revisao
 from agente.regras.roteador import ROTAS, classificar
 from agente.regras.salvaguardas import AVISO, ROTEIRO_PADRAO, sem_solucao_pronta
@@ -74,6 +76,13 @@ class TestRoteador(unittest.TestCase):
             with self.subTest(frase=frase):
                 self.assertEqual(classificar(frase).intencao, Intencao.CONFIRMACAO)
         self.assertEqual(classificar("Me dê um exemplo, ok?").intencao, Intencao.EXEMPLO)
+
+    def test_secoes_das_rotas_existem_na_base(self):
+        from agente.conhecimento import secoes
+
+        for rota in ROTAS.values():
+            for secao in rota.secoes:
+                self.assertIn(secao, secoes(), f"{rota.intencao.value} usa a seção '{secao}'")
 
     def test_toda_intencao_tem_rota(self):
         self.assertEqual(set(ROTAS), set(Intencao))
@@ -247,6 +256,68 @@ class TestMemoria(unittest.TestCase):
             self.assertEqual(len(Memoria(arquivo=arquivo).turnos), 1)
             arquivo.write_text("{quebrado", encoding="utf-8")
             self.assertEqual(Memoria(arquivo=arquivo).turnos, [])
+
+
+class TestPerguntaDoTutor(unittest.TestCase):
+    """Bug relatado em 13/11: responder à pergunta final do tutor dava resposta sem relação."""
+
+    PERGUNTA = "O Observer liga objetos.\n\nNo exemplo da planilha, quem seria o subject?"
+
+    def test_pergunta_final_e_extraida(self):
+        self.assertEqual(pergunta_final(self.PERGUNTA), "No exemplo da planilha, quem seria o subject?")
+        self.assertEqual(pergunta_final("Texto.\n**Quer ver um exemplo?**"), "Quer ver um exemplo?")
+        self.assertEqual(pergunta_final("Resposta sem pergunta."), "")
+
+    def test_respostas_curtas_vao_ao_inquiridor(self):
+        for resposta in ["acho que seria no push", "um exemplo seria um botão de interface",
+                         "o gráfico seria o observador e a planilha o subject"]:
+            with self.subTest(resposta=resposta):
+                rota = classificar(resposta, pergunta_tutor="Quem seria o subject?")
+                self.assertEqual(rota.intencao, Intencao.RESPOSTA_PERGUNTA)
+                self.assertEqual(rota.agente, NomeAgente.INQUIRIDOR)
+
+    def test_aceite_segue_o_convite_do_tutor(self):
+        self.assertEqual(classificar("sim", pergunta_tutor="Quer ver um exemplo em Java?").intencao, Intencao.EXEMPLO)
+        self.assertEqual(classificar("bora!", pergunta_tutor="Quer tentar um exercício?").intencao, Intencao.EXERCICIO)
+        self.assertEqual(classificar("sim", pergunta_tutor="Quer saber mais sobre os participantes?").intencao,
+                         Intencao.RESPOSTA_PERGUNTA)
+        self.assertEqual(classificar("sim, eles se comunicam", pergunta_tutor="Um observador conhece os outros?")
+                         .intencao, Intencao.RESPOSTA_PERGUNTA)
+
+    def test_nao_sei_tem_rota_propria(self):
+        self.assertEqual(classificar("não sei", pergunta_tutor="Push ou pull?").intencao, Intencao.NAO_SEI)
+
+    def test_pedido_novo_continua_roteado_normalmente(self):
+        self.assertEqual(classificar("Dê um exemplo em Java", pergunta_tutor="Quem seria o subject?").intencao, Intencao.EXEMPLO)
+        self.assertEqual(classificar("o que é um Subject?", pergunta_tutor="Quem seria o subject?").intencao, Intencao.CONCEITO)
+        self.assertEqual(classificar("me dá o código pronto", pergunta_tutor="Quem seria o subject?").intencao,
+                         Intencao.SOLUCAO_PRONTA)
+
+    def test_roteiro_da_professora_nao_e_desviado(self):
+        for cid, texto in PERGUNTAS.items():
+            with self.subTest(cenario=cid):
+                self.assertEqual(classificar(texto, pergunta_tutor="Quem seria o subject?"), classificar(texto))
+
+    def test_cenarios_de_dialogo_tem_a_rota_esperada(self):
+        from tests.cenarios import DIALOGOS
+        for cid, c in DIALOGOS.items():
+            with self.subTest(cenario=cid):
+                pergunta = c.contexto[1].splitlines()[-1]
+                self.assertEqual(classificar(c.mensagens[-1], pergunta_tutor=pergunta).intencao.value, c.intencao)
+
+    def test_pergunta_sobrevive_ao_corte_do_historico(self):
+        sistema, orq = novo_sistema(texto="Explicação longa. " * 60 + "\nQuem seria o subject?")
+        sistema.resposta("O que é Observer?")
+        sistema.resposta("a planilha")
+        rota, entradas, _ = orq.chamadas[1]
+        self.assertEqual(rota.intencao, Intencao.RESPOSTA_PERGUNTA)
+        self.assertIn("O tutor terminou perguntando: Quem seria o subject?", entradas["historico"])
+
+    def test_sem_pergunta_final_nada_muda(self):
+        sistema, orq = novo_sistema(texto="Resposta sem pergunta.")
+        sistema.resposta("O que é Observer?")
+        sistema.resposta("a planilha")
+        self.assertEqual(orq.chamadas[1][0].intencao, Intencao.CONCEITO)
 
 
 DADOS = Path(__file__).with_name("dados")
