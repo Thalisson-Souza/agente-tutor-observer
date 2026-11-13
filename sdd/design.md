@@ -123,7 +123,7 @@ Classificar com o modelo seria mais uma chamada (prompts curtos levaram 30–40 
 O 7b lê o prompt a ~13,5 tok/s; cada agente lê ~1300 tokens, ~100 s só de leitura. Quatro agentes em fila passariam de 5 min por pergunta.
 
 **D4 — Base de conhecimento fixa, injetada por seções** (10/11)
-`conhecimento/observer.md`, baseado no GoF, é a única fonte de fatos permitida nos prompts. Só as seções da intenção entram, para reduzir o tempo de leitura.
+`conhecimento/observer.md`, baseado no GoF (conferida com o livro na D20), é a única fonte de fatos permitida nos prompts. Só as seções da intenção entram, para reduzir o tempo de leitura.
 *Descartado:* deixar o modelo responder só com o que "sabe" (alucinação) ou RAG com embeddings (mais complexidade sem ganho para um padrão só).
 
 **D5 — Guardião só nas rotas de risco** (10/11)
@@ -173,6 +173,9 @@ Mensagens sem palavra-chave caíam em "conceito" e o Tutor dava a aula inteira, 
 
 **D19 — Troca de modelo durante a conversa** (11/11)
 O orquestrador recebe o modelo por parâmetro (antes lia o `config` global) e a fachada ganhou `usar_orquestrador()`. As interfaces criam um orquestrador por modelo na primeira escolha e o reaproveitam; a memória continua ao trocar. Cada resposta registra o modelo que de fato respondeu (rodapé e log). O 7b fica como padrão; o 3b é opção explícita de "mais rápido, erra mais" e ainda não rodou o roteiro completo.
+
+**D20 — Base de conhecimento ancorada no livro da disciplina** (11/11)
+Cada fato do GoF traz a página da edição da Bookman (bibliografia básica), com nossas palavras e os termos da tradução; o que é prática fora do livro é marcado [prática]. Assim o tutor pode indicar "veja o livro da disciplina, p. X" (sugerido no enunciado) e a dupla pode justificar de onde vem cada afirmação. A conferência corrigiu um erro (referência do ConcreteObserver ao subject, p. 276).
 
 ## Verificado e descartado
 

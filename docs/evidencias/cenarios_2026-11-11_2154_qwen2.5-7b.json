@@ -1,0 +1,62 @@
+[
+  {
+    "cenario": "C1",
+    "pergunta": "Explique o que é o padrão Observer e qual problema ele resolve.",
+    "intencao": "conceito",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 230,
+    "resposta": "Claro! Vamos explicar o padrão Observer de forma simples e didática.\n\n**Analogia:**\nImagine que você assina um jornal. Quando há novidades, você é notificado automaticamente. Você pode assinar ou cancelar a qualquer momento, mas o jornal continua funcionando normalmente.\n\n**Definição Técnica:**\nO padrão Observer resolve o problema de manter a consistência entre objetos relacionados sem acoplá-los fortemente. Um objeto chamado Subject pode notificar um conjunto de Observadores quando seu estado muda, e esses Observadores podem então atualizar suas informações.\n\n**Participantes e Colaborações:**\n- **Subject**: Conhece os seus Observadores e fornece métodos para adicionar e remover Observadores.\n- **Observer**: Define uma interface de atualização para ser notificado.\n- **ConcreteSubject**: Armazena o estado de interesse dos Observadores e notifica-os quando o estado muda.\n- **ConcreteObserver**: Mantém uma referência para um ConcreteSubject, guarda o estado e implementa a atualização.\n\n**Consequências:**\n- O acoplamento entre Subject e Observer é abstrato, permitindo reutilização e independência.\n- Suporte a comunicação broadcast, onde a notificação vai para todos os Observadores.\n- Possibilidade de atualizações inesperadas, pois os Observadores não sabem dos outros.\n\n**Quando usar e quando evitar:**\n- Use quando precisa manter a consistência entre objetos sem acoplá-los fortemente.\n- Evite quando a comunicação precisa ser muito específica ou quando o acoplamento entre objetos é necessário.\n\nQual dessas informações você gostaria de explorar mais?"
+  },
+  {
+    "cenario": "C4",
+    "pergunta": "Como o padrão Observer costuma ser aplicado de forma errada? Dê um exemplo de uso equivocado e explique como corrigir.",
+    "intencao": "uso_incorreto",
+    "agentes": [
+      "exemplificador"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 245,
+    "resposta": "```java\n// ERRADO: o observador se desanexa enquanto o subject percorre a lista\nclass Notificador implements Observador {\n    private final Notificacao notificacao;\n    Notificador(Notificacao n) { this.notificacao = n; }\n    public void atualizar(double valor) {\n        System.out.println(\"Notificação: \" + valor);\n        notificacao.desanexar(this);   // altera a lista no meio do for abaixo\n    }\n}\n\nclass Notificacao {\n    private final List<Observador> observadores = new ArrayList<>();\n    public void desanexar(Observador o) { observadores.remove(o); }\n    public void notificar(double valor) {\n        for (Observador o : observadores) o.atualizar(valor);\n    }\n}\n```\n\n**Explicação:**\n\nO erro ocorre porque o observador `Notificador` se desanexa (`desanexar(this)`) durante a iteração da lista de observadores (`for (Observador o : observadores)`). Isso pode causar um `ConcurrentModificationException`, pois a lista está sendo modificada (`remove`) durante a iteração.\n\n**Correção:**\n\nA correção é fazer a iteração sobre uma cópia da lista de observadores, garantindo que as modificações na lista original não afetem a iteração. A versão corrigida do método `notificar` é:\n\n```java\npublic void notificar(double valor) {\n    for (Observador o : List.copyOf(observadores)) o.atualizar(valor);\n}\n```\n\n**Pergunta ao estudante:**\n\nQual é a principal razão para fazer a iteração sobre uma cópia da lista de observadores?"
+  },
+  {
+    "cenario": "C5",
+    "pergunta": "Com qual padrão o Observer é mais confundido? Explique a diferença entre eles e por que essa confusão acontece.",
+    "intencao": "confusao",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 166,
+    "resposta": "O Observer é mais confundido com o Publish-Subscribe. Ambos envolvem a notificação de múltiplos objetos quando um objeto principal muda, mas há uma diferença crucial. No Observer, o subject conhece os observadores através de uma interface, e os observadores se inscrevem diretamente no subject. Já no Publish-Subscribe, o publicador e o assinante não se conhecem, e a notificação é feita através de um intermediário como um barramento ou broker.\n\nA confusão acontece porque o livro do GOF usa o termo \"Publish-Subscribe\" como sinônimo do Observer, mas hoje \"Publish-Subscribe\" costuma designar uma arquitetura com intermediário, onde a entrega é assíncrona e os publicadores e assinantes não se conhecem.\n\nUm critério prático para distinguir é: no Observer, o subject conhece os observadores (só pela interface) e o ConcreteObserver referencia o ConcreteSubject. No Publish-Subscribe com broker, nenhum dos lados conhece o outro.\n\nQual desses padrões permite que o subject conheça os observadores diretamente?"
+  },
+  {
+    "cenario": "C7",
+    "pergunta": "O que devo lembrar antes de usar o padrão Observer?",
+    "intencao": "fechamento",
+    "agentes": [
+      "tutor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 87,
+    "resposta": "Antes de usar o padrão Observer, lembre-se:\n\n1. Existe mesmo uma relação um-para-muitos que muda em tempo de execução? Se há um único dependente fixo, chame-o diretamente.\n2. Push ou pull? Defina o que vai na notificação (p. 279).\n3. Quem chama Notify e quando? Só com o estado consistente (p. 278).\n4. Como e quando os observadores serão desanexados (evitar vazamento de memória)?\n5. O código não pode depender da ordem de notificação.\n6. Cuidado com cascatas e com observadores que alteram o subject (p. 277).\n7. Update deve ser leve.\n\nQual desses pontos você acha mais difícil de implementar corretamente?"
+  },
+  {
+    "cenario": "E4",
+    "pergunta": "O Observer é um padrão criacional, né?",
+    "intencao": "confirmacao",
+    "agentes": [
+      "inquiridor"
+    ],
+    "vereditos": [],
+    "erro": null,
+    "segundos": 127,
+    "resposta": "A afirmação está errada. O Observer não é um padrão criacional, mas um padrão comportamental. O Observer se preocupa com como objetos se comunicam e dependem um do outro, enquanto os padrões criacionais focam na criação de objetos. Você entende por que o Observer é comportamental e não criacional?"
+  }
+]
